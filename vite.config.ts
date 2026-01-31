@@ -4,11 +4,9 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "/excel-form-fixer/", // Add this line!
+  base: "/excel-form-fixer/",
   server: {
     host: "::",
-    // ... rest of your code
-
     port: 8080,
     hmr: {
       overlay: false,
