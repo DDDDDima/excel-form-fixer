@@ -239,13 +239,21 @@ export function TransactionForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Кількість</Label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="pr-12"
+                />
+                {(selectedProduct || isCustomProduct) && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                    {isCustomProduct ? customProductUnit : selectedProduct?.unit}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Ціна за од. (грн)</Label>
