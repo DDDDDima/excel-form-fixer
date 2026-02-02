@@ -1,66 +1,73 @@
 
-# 🍓 Система Управління Запасами (Inventory Management System)
+# План: Покращення форми введення даних
 
-## Огляд / Overview
-A modern, clean web application for managing your food/beverage business inventory, connected to your existing Google Sheets. All in Ukrainian language.
+## Зміни
 
----
+### 1. Поле кількості з підказкою одиниці виміру
+Додати відображення одиниці виміру (кг, л, шт, пляш) біля поля "Кількість", яка динамічно змінюється залежно від обраного товару.
 
-## Головні Функції / Main Features
+**Файл:** `src/components/inventory/TransactionForm.tsx`
 
-### 1. 📦 Розширена Форма Введення / Enhanced Data Entry Form
-- **Product dropdown** with all items from your catalog (Полуниця, Банан, Шоколад, Сиропи, etc.)
-- **Category filter** to quickly find products (Ягода/Фрукти, Шоколад, Дубайський, Сиропи, Бар, Розхідники)
-- **Option to add new products** if not in catalog
-- **Transaction type**: Прихід (incoming) or Списання (outgoing)
-- **Price per unit** field for purchase logging
-- **Auto-calculated total** (Quantity × Price)
-- **Date picker** for recording when transaction occurred
+**Зміни:**
+- Замінити просте поле Input на поле з суфіксом одиниці виміру
+- Одиниця береться з обраного товару (`selectedProduct?.unit`) або з кастомного товару (`customProductUnit`)
+- Використати відносне позиціонування для показу одиниці праворуч у полі
 
-### 2. 📊 Огляд Залишків / Stock Overview Dashboard
-- **Current stock levels** for all products in a clean table view
-- **Visual indicators**: 
-  - 🟢 Green = normal stock
-  - 🟡 Yellow = approaching critical level but with margin
-  - orange = approaching critical level
-  - 🔴 Red = below critical threshold
-- **Filter by category** to focus on specific product groups
-- **Search** to quickly find specific items
-
-### 3. ⚠️ Сповіщення про Низький Запас / Low Stock Alerts
-- **Alert banner** at the top showing items below critical level
-- **Count indicator** showing how many items need attention
-- **Quick action** to jump to reorder those items
-
-### 4. 📱 Адаптивний Дизайн / Responsive Design
-- Works on phones, tablets, and desktop
-- Clean white cards with subtle shadows
-- Easy-to-tap buttons for mobile use in the field
+**Приклад вигляду:**
+```text
+┌─────────────────────────────────────┐
+│ Кількість                           │
+├─────────────────────────────────────┤
+│ [5.5                          ] кг  │
+└─────────────────────────────────────┘
+```
 
 ---
 
-## Структура Сторінки / Page Structure
+## Технічна реалізація
 
-| Section | Description |
-|---------|-------------|
-| **Header** | App title + Low Stock Alert indicator |
-| **Quick Stats** | Cards showing: Total items, Items below critical, Today's transactions |
-| **Data Entry Form** | Main form with all fields in a card |
-| **Stock Table** | Searchable/filterable table of current inventory |
+### TransactionForm.tsx - зміни в секції Quantity (рядки 238-249)
+
+**Було:**
+```tsx
+<div className="space-y-2">
+  <Label>Кількість</Label>
+  <Input
+    type="number"
+    step="0.01"
+    placeholder="0"
+    value={quantity}
+    onChange={(e) => setQuantity(e.target.value)}
+  />
+</div>
+```
+
+**Стане:**
+```tsx
+<div className="space-y-2">
+  <Label>Кількість</Label>
+  <div className="relative">
+    <Input
+      type="number"
+      step="0.01"
+      placeholder="0"
+      value={quantity}
+      onChange={(e) => setQuantity(e.target.value)}
+      className="pr-12"
+    />
+    {(selectedProduct || isCustomProduct) && (
+      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+        {isCustomProduct ? customProductUnit : selectedProduct?.unit}
+      </span>
+    )}
+  </div>
+</div>
+```
 
 ---
 
-## Технічні Деталі / Technical Details
-- Keeps your **existing Google Sheets + Apps Script** connection
-- Product catalog **embedded in app** (from your Excel data)
-- All labels and UI in **Ukrainian**
-- **No login required** (open access as requested)
-- Mobile-friendly responsive layout
-
----
-
-## Майбутні Можливості (Later) / Future Options
-- User authentication via Google Scripts
-- Transaction history view
-- Export reports
-- Charts/analytics
+## Результат
+- Коли користувач обере товар (наприклад, "Полуниця"), біля поля кількості буде видно "кг"
+- Коли обере "Стаканчики", буде видно "шт"
+- Для кастомного товару показується обрана одиниця виміру
+- Підказка з'являється тільки після вибору товару
