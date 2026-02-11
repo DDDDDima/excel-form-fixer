@@ -1,6 +1,6 @@
-// Google Sheets API Web App URL
+﻿// Google Sheets API Web App URL
 // IMPORTANT: Paste your deployed URL here after "Deploy > New Deployment > Web App"
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhorDqVKJXhymTIIZ5w6pC-Evkx4Xd_53AbCmNCr9cebR9orh67W0LO_6wSlXogs4P/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
 
 export interface SheetProduct {
   id: string;
@@ -18,7 +18,7 @@ export interface SheetTransaction {
   category: string;
   quantity: number;
   unit: string;
-  type: "Прихід" | "Продаж" | "Списання";
+  type: "РџСЂРёС…С–Рґ" | "РџСЂРѕРґР°Р¶" | "РЎРїРёСЃР°РЅРЅСЏ";
   pricePerUnit?: number;
   total?: number;
 }
@@ -34,7 +34,7 @@ export interface InventoryData {
  */
 export async function fetchInventoryFromSheets(): Promise<InventoryData> {
   try {
-    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getInventory`, {
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
       method: "GET",
       redirect: "follow",
     });
@@ -49,8 +49,8 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
     const products: SheetProduct[] = (data.products || []).map((row: any, index: number) => ({
       id: row.id || `sheet-${index}`,
       name: row.name || "",
-      category: row.category || "Інше",
-      unit: row.unit || "шт",
+      category: row.category || "Р†РЅС€Рµ",
+      unit: row.unit || "С€С‚",
       criticalLevel: parseFloat(row.criticalLevel) || 1,
       currentStock: parseFloat(row.currentStock) || 0,
     }));
@@ -61,8 +61,8 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
       productName: row.item || row.productName || "",
       category: row.category || "",
       quantity: parseFloat(row.quantity) || 0,
-      unit: row.unit || "шт",
-      type: row.type || "Прихід",
+      unit: row.unit || "С€С‚",
+      type: row.type || "РџСЂРёС…С–Рґ",
       pricePerUnit: parseFloat(row.pricePerUnit) || undefined,
       total: parseFloat(row.total) || undefined,
     }));
@@ -80,14 +80,14 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
 export async function submitTransactionToSheets(transaction: {
   item: string;
   quantity: number;
-  type: "Прихід" | "Продаж" | "Списання";
+  type: "РџСЂРёС…С–Рґ" | "РџСЂРѕРґР°Р¶" | "РЎРїРёСЃР°РЅРЅСЏ";
   category: string;
   pricePerUnit?: number;
   total?: number;
   date: string;
 }): Promise<boolean> {
   try {
-    await fetch(GOOGLE_SCRIPT_URL, {
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
       method: "POST",
       mode: "no-cors",
       cache: "no-cache",
