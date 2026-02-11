@@ -18,7 +18,7 @@ export interface SheetTransaction {
   category: string;
   quantity: number;
   unit: string;
-  type: "РџСЂРёС…С–Рґ" | "РџСЂРѕРґР°Р¶" | "РЎРїРёСЃР°РЅРЅСЏ";
+  type: "Прихід" | "Продаж" | "Списання";
   pricePerUnit?: number;
   total?: number;
 }
@@ -34,7 +34,7 @@ export interface InventoryData {
  */
 export async function fetchInventoryFromSheets(): Promise<InventoryData> {
   try {
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
+    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getInventory`, {
       method: "GET",
       redirect: "follow",
     });
@@ -49,8 +49,8 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEAD
     const products: SheetProduct[] = (data.products || []).map((row: any, index: number) => ({
       id: row.id || `sheet-${index}`,
       name: row.name || "",
-      category: row.category || "Р†РЅС€Рµ",
-      unit: row.unit || "С€С‚",
+      category: row.category || "Інше",
+      unit: row.unit || "шт",
       criticalLevel: parseFloat(row.criticalLevel) || 1,
       currentStock: parseFloat(row.currentStock) || 0,
     }));
@@ -61,8 +61,8 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEAD
       productName: row.item || row.productName || "",
       category: row.category || "",
       quantity: parseFloat(row.quantity) || 0,
-      unit: row.unit || "С€С‚",
-      type: row.type || "РџСЂРёС…С–Рґ",
+      unit: row.unit || "шт",
+      type: row.type || "Прихід",
       pricePerUnit: parseFloat(row.pricePerUnit) || undefined,
       total: parseFloat(row.total) || undefined,
     }));
@@ -80,14 +80,14 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEAD
 export async function submitTransactionToSheets(transaction: {
   item: string;
   quantity: number;
-  type: "РџСЂРёС…С–Рґ" | "РџСЂРѕРґР°Р¶" | "РЎРїРёСЃР°РЅРЅСЏ";
+  type: "Прихід" | "Продаж" | "Списання";
   category: string;
   pricePerUnit?: number;
   total?: number;
   date: string;
 }): Promise<boolean> {
   try {
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
+    await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
       cache: "no-cache",
