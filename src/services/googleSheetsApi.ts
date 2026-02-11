@@ -1,6 +1,6 @@
 ﻿// Google Sheets API Web App URL
 // IMPORTANT: Paste your deployed URL here after "Deploy > New Deployment > Web App"
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfT4qzBMDKKkAPY4a5InahmMdbgbqwJd2il8d-99t-OCx6z0llg4fWLYhN6yse9B7J/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrCtH4WOsCJkGfZtRN75p1GbB3fnOxzfLzoV_KTlT3SvO21yuviZ4ICiVyay1ZPU8d/exec";
 
 export interface SheetProduct {
   id: string;
