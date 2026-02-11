@@ -23,34 +23,27 @@ export function useInventory() {
       try {
         const data = await fetchInventoryFromSheets();
 
-        if (data.products.length > 0) {
-          // Merge sheet data with initial products (sheet data takes priority)
-          const mergedProducts = initialProducts.map((initialProduct) => {
-            const sheetProduct = data.products.find(
-              (p) => p.name.toLowerCase() === initialProduct.name.toLowerCase()
+        if (data.directory && data.directory.length > 0) {
+          // Use directory as the primary list of products
+          const productsFromSheet = data.directory.map((dirItem, index) => {
+            const stockItem = data.products.find(
+              (p) => p.name.toLowerCase() === dirItem.name.toLowerCase()
             );
-            if (sheetProduct) {
-              return {
-                ...initialProduct,
-                currentStock: sheetProduct.currentStock,
-                criticalLevel: sheetProduct.criticalLevel || initialProduct.criticalLevel,
-              };
-            }
-            return initialProduct;
+
+            return {
+              id: `sheet-${index}`,
+              name: dirItem.name,
+              category: dirItem.category,
+              unit: dirItem.unit,
+              criticalLevel: dirItem.criticalLevel || 0,
+              currentStock: stockItem ? stockItem.currentStock : 0,
+            };
           });
 
-          // Add any new products from sheets that aren't in initialProducts
-          const newProducts = data.products.filter(
-            (sheetProduct) =>
-              !initialProducts.some(
-                (p) => p.name.toLowerCase() === sheetProduct.name.toLowerCase()
-              )
-          );
-
-          setProducts([...mergedProducts, ...newProducts]);
+          setProducts(productsFromSheet);
         }
 
-        if (data.transactions.length > 0) {
+        if (data.transactions && data.transactions.length > 0) {
           setTransactions(
             data.transactions.map((t) => ({
               id: t.id,
@@ -68,7 +61,7 @@ export function useInventory() {
         }
       } catch (error) {
         console.error("Failed to load inventory data:", error);
-        setLoadError("Не вдалося завантажити дані з Google Sheets. Використовуються локальні дані.");
+        setLoadError("Не вдалося завантажити дані з Google Sheets. Перевірте підключення.");
       } finally {
         setIsLoading(false);
       }
@@ -84,6 +77,7 @@ export function useInventory() {
 
   // Calculate stock status for a product
   const getStockStatus = useCallback((product: Product) => {
+    if (product.criticalLevel === 0) return "normal";
     const ratio = product.currentStock / product.criticalLevel;
     if (ratio <= 1) return "critical"; // At or below critical
     if (ratio <= 1.5) return "warning-high"; // Within 50% of critical (orange)
@@ -110,29 +104,23 @@ export function useInventory() {
     try {
       const data = await fetchInventoryFromSheets();
 
-      if (data.products.length > 0) {
-        const mergedProducts = initialProducts.map((initialProduct) => {
-          const sheetProduct = data.products.find(
-            (p) => p.name.toLowerCase() === initialProduct.name.toLowerCase()
+      if (data.directory && data.directory.length > 0) {
+        const productsFromSheet = data.directory.map((dirItem, index) => {
+          const stockItem = data.products.find(
+            (p) => p.name.toLowerCase() === dirItem.name.toLowerCase()
           );
-          if (sheetProduct) {
-            return {
-              ...initialProduct,
-              currentStock: sheetProduct.currentStock,
-              criticalLevel: sheetProduct.criticalLevel || initialProduct.criticalLevel,
-            };
-          }
-          return initialProduct;
+
+          return {
+            id: `sheet-${index}`,
+            name: dirItem.name,
+            category: dirItem.category,
+            unit: dirItem.unit,
+            criticalLevel: dirItem.criticalLevel || 0,
+            currentStock: stockItem ? stockItem.currentStock : 0,
+          };
         });
 
-        const newProducts = data.products.filter(
-          (sheetProduct) =>
-            !initialProducts.some(
-              (p) => p.name.toLowerCase() === sheetProduct.name.toLowerCase()
-            )
-        );
-
-        setProducts([...mergedProducts, ...newProducts]);
+        setProducts(productsFromSheet);
       }
     } catch (error) {
       console.error("Failed to refresh inventory data:", error);
@@ -141,6 +129,7 @@ export function useInventory() {
       setIsLoading(false);
     }
   }, []);
+
 
   // Submit transaction
   const submitTransaction = useCallback(
