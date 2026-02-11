@@ -23,9 +23,17 @@ export interface SheetTransaction {
   total?: number;
 }
 
+export interface SheetDirectoryItem {
+  category: string;
+  name: string;
+  unit: string;
+  criticalLevel: number;
+}
+
 export interface InventoryData {
   products: SheetProduct[];
   transactions: SheetTransaction[];
+  directory: SheetDirectoryItem[];
 }
 
 /**
@@ -47,12 +55,19 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
 
     // Parse and transform the data from Google Sheets
     const products: SheetProduct[] = (data.products || []).map((row: any, index: number) => ({
-      id: row.id || `sheet-${index}`,
+      id: row.id || `stock-${index}`,
       name: row.name || "",
-      category: row.category || "Інше",
-      unit: row.unit || "шт",
-      criticalLevel: parseFloat(row.criticalLevel) || 1,
+      category: row.category || "",
+      unit: row.unit || "",
+      criticalLevel: parseFloat(row.criticalLevel) || 0,
       currentStock: parseFloat(row.currentStock) || 0,
+    }));
+
+    const directory: SheetDirectoryItem[] = (data.directory || []).map((row: any) => ({
+      category: row.category || "",
+      name: row.name || "",
+      unit: row.unit || "",
+      criticalLevel: parseFloat(row.criticalLevel) || 0,
     }));
 
     const transactions: SheetTransaction[] = (data.transactions || []).map((row: any, index: number) => ({
@@ -67,12 +82,13 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
       total: parseFloat(row.total) || undefined,
     }));
 
-    return { products, transactions };
+    return { products, transactions, directory };
   } catch (error) {
     console.error("Error fetching inventory from Google Sheets:", error);
     throw error;
   }
 }
+
 
 /**
  * Submits a transaction to Google Sheets
