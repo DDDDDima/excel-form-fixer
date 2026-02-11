@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Product, Transaction, initialProducts } from "@/data/products";
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhorDqVKJXhymTIIZ5w6pC-Evkx4Xd_53AbCmNCr9cebR9orh67W0LO_6wSlXogs4P/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztt87PY5cEADEozKKIpzDz2-QeasezYQ8cNVlV4j91f_EhTB6ZoyllUbf6xOEMX8iW/exec";
 
 export function useInventory() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
