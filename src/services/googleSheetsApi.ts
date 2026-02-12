@@ -1,6 +1,6 @@
 ﻿// Google Sheets API Web App URL
 // IMPORTANT: Paste your deployed URL here after "Deploy > New Deployment > Web App"
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyiDFVS-8hnEYHVmY6QUnK2XSsoBOvHe2EXStQUnZgLxBnPjySb5OGrahWqTdS7Ajf/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5HuPkjjUt6HB46D4wAQaeKk2DdY1kJLZgFKYaztV1Oa0VLfU8AyHl_sfEwEtX5YI4/exec";
 
 export interface SheetProduct {
   id: string;
@@ -48,10 +48,29 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const text = await response.text();
+      console.error(`HTTP error! status: ${response.status}, body: ${text}`);
+      throw new Error(`Помилка сервера Google: ${response.status}`);
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error("Failed to parse JSON response. Raw text:", text);
+        throw new Error("Отримано некоректну відповідь від сервера (очікувався JSON).");
+      }
+    } catch (error) {
+      console.error("Error reading response text:", error);
+      throw error;
+    }
+
+    if (data.error) {
+      console.error("Apps Script returned an error:", data.error);
+      throw new Error(`Помилка скрипта: ${data.error}`);
+    }
 
     // Parse and transform the data from Google Sheets
     const products: SheetProduct[] = (data.products || []).map((row: any, index: number) => ({
