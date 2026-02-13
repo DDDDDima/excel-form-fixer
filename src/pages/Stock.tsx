@@ -1,11 +1,11 @@
-import { useInventory } from "@/hooks/useInventory";
-import { LowStockAlert } from "@/components/inventory/LowStockAlert";
-import { StatsCards } from "@/components/inventory/StatsCards";
-import { StockTable } from "@/components/inventory/StockTable";
-import { Button } from "@/components/ui/button";
+import { useInventory } from "../hooks/useInventory";
+import { LowStockAlert } from "../components/inventory/LowStockAlert";
+import { StatsCards } from "../components/inventory/StatsCards";
+import { StockTable } from "../components/inventory/StockTable";
+import { Button } from "../components/ui/button";
 import { RefreshCw, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Skeleton } from "../components/ui/skeleton";
 
 const Stock = () => {
     const {

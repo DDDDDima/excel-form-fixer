@@ -1,8 +1,8 @@
-import { useInventory } from "@/hooks/useInventory";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useInventory } from "../hooks/useInventory";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { BookOpen, AlertTriangle, Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "../components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 
 const Directory = () => {
     const { products, isLoading } = useInventory();
