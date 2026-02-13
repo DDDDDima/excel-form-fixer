@@ -130,58 +130,92 @@ export function TransactionForm({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Date Picker */}
+          {/* 1. Transaction Type */}
           <div className="space-y-2">
-            <Label>Дата</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: uk }) : "Оберіть дату"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(d) => d && setDate(d)}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Category Filter */}
-          <div className="space-y-2">
-            <Label>Категорія</Label>
+            <Label className="text-sm font-semibold text-primary/80">Тип операції</Label>
             <Select
-              value={selectedCategory}
+              value={transactionType}
               onValueChange={(val) => {
-                setSelectedCategory(val as Category);
-                setSelectedProductId("");
-                if (val === "готовий товар") {
-                  setTransactionType("Продаж");
+                const type = val as "Прихід" | "Продаж" | "Списання";
+                setTransactionType(type);
+                if (type === "Продаж") {
+                  setSelectedCategory("готовий товар");
+                } else if (selectedCategory === "готовий товар") {
+                  setSelectedCategory("Всі категорії");
                 }
               }}
             >
-              <SelectTrigger className="bg-white/5 border-white/10">
-                <SelectValue placeholder="Оберіть категорію" />
+              <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
+                <SelectItem value="Продаж">
+                  <span className="text-blue-600 font-bold italic">🛍️ Продаж (Ingredient Write-off)</span>
+                </SelectItem>
+                <SelectItem value="Прихід">
+                  <span className="text-green-600 font-bold">📥 Прихід (Stock Arrival)</span>
+                </SelectItem>
+                <SelectItem value="Списання">
+                  <span className="text-red-400 font-bold">🗑️ Списання (Waste/Loss)</span>
+                </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* 2. Date Picker */}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-muted-foreground">Дата</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal bg-white/5 border-white/10",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP", { locale: uk }) : "Оберіть дату"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => d && setDate(d)}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* 3. Category Filter */}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-muted-foreground">Категорія</Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={(val) => {
+                  setSelectedCategory(val as Category);
+                  setSelectedProductId("");
+                  if (val === "готовий товар") {
+                    setTransactionType("Продаж");
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-white/5 border-white/10">
+                  <SelectValue placeholder="Оберіть категорію" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Product Selection */}
@@ -243,35 +277,6 @@ export function TransactionForm({
             )}
           </div>
 
-          {/* Transaction Type */}
-          <div className="space-y-2">
-            <Label>Тип операції</Label>
-            <Select
-              value={transactionType}
-              onValueChange={(val) => {
-                const type = val as "Прихід" | "Продаж" | "Списання";
-                setTransactionType(type);
-                if (type === "Продаж" && selectedCategory === "Всі категорії") {
-                  setSelectedCategory("готовий товар");
-                }
-              }}
-            >
-              <SelectTrigger className="bg-white/5 border-white/10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="Продаж">
-                  <span className="text-blue-600 font-medium italic">🛍️ Продаж (Ingredient Write-off)</span>
-                </SelectItem>
-                <SelectItem value="Прихід">
-                  <span className="text-green-600 font-medium">📥 Прихід (Stock Arrival)</span>
-                </SelectItem>
-                <SelectItem value="Списання">
-                  <span className="text-red-400 font-medium">🗑️ Списання (Waste/Loss)</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Quantity and Price */}
           <div className="grid grid-cols-2 gap-4">
