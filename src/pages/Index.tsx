@@ -1,12 +1,12 @@
-import { useInventory } from "@/hooks/useInventory";
-import { LowStockAlert } from "@/components/inventory/LowStockAlert";
-import { StatsCards } from "@/components/inventory/StatsCards";
-import { TransactionForm } from "@/components/inventory/TransactionForm";
-import { StockTable } from "@/components/inventory/StockTable";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useInventory } from "../hooks/useInventory";
+import { LowStockAlert } from "../components/inventory/LowStockAlert";
+import { StatsCards } from "../components/inventory/StatsCards";
+import { TransactionForm } from "../components/inventory/TransactionForm";
+import { StockTable } from "../components/inventory/StockTable";
+import { Button } from "../components/ui/button";
+import { Skeleton } from "../components/ui/skeleton";
 import { RefreshCw, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 const Index = () => {
   const {
@@ -22,6 +22,7 @@ const Index = () => {
     addProduct,
     submitTransaction,
     refreshData,
+    categories,
   } = useInventory();
 
   return (
@@ -115,6 +116,7 @@ const Index = () => {
                 <TransactionForm
                   products={products}
                   salesProducts={salesProducts}
+                  categories={categories}
                   isSubmitting={isSubmitting}
                   submitStatus={submitStatus}
                   onSubmit={submitTransaction}
@@ -124,7 +126,7 @@ const Index = () => {
 
               {/* Stock Table */}
               <div className="lg:col-span-1">
-                <StockTable products={products} getStockStatus={getStockStatus} />
+                <StockTable products={products} getStockStatus={getStockStatus} categories={categories} />
               </div>
             </div>
           </>
