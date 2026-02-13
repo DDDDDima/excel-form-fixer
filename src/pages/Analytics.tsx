@@ -30,7 +30,7 @@ const Analytics = () => {
             );
 
             const receipts = productTransactions
-                .filter(t => t.type === "Прихід" || t.type === "arrival")
+                .filter(t => t.type === "Прихід")
                 .reduce((sum, t) => sum + t.quantity, 0);
 
             const sales = productTransactions
