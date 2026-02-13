@@ -10,6 +10,8 @@ export function useInventory() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Shared data loading logic
   const loadInventoryData = useCallback(async (isRefresh = false) => {
@@ -88,6 +90,32 @@ export function useInventory() {
     await loadInventoryData(true);
     setIsLoading(false);
   }, [loadInventoryData]);
+
+  // Calculate low stock items
+  const lowStockItems = useMemo(() => {
+    return products.filter((p) => p.currentStock <= p.criticalLevel);
+  }, [products]);
+
+  // Calculate stock status for a product
+  const getStockStatus = useCallback((product: Product) => {
+    if (product.criticalLevel === 0) return "normal";
+    const ratio = product.currentStock / product.criticalLevel;
+    if (ratio <= 1) return "critical"; // At or below critical
+    if (ratio <= 1.5) return "warning-high"; // Within 50% of critical (orange)
+    if (ratio <= 2) return "warning"; // Within 100% of critical (yellow)
+    return "normal"; // More than 2x critical level
+  }, []);
+
+  // Add a new product to catalog
+  const addProduct = useCallback((product: Omit<Product, "id" | "currentStock">) => {
+    const newProduct: Product = {
+      ...product,
+      id: `custom-${Date.now()}`,
+      currentStock: 0,
+    };
+    setProducts((prev) => [...prev, newProduct]);
+    return newProduct;
+  }, []);
 
 
   // Submit transaction
