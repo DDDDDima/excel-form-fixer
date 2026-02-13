@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 const Transactions = () => {
     const {
         products,
+        salesProducts,
         isSubmitting,
         submitStatus,
         transactions,
@@ -37,6 +38,7 @@ const Transactions = () => {
                 <div className="xl:col-span-1">
                     <TransactionForm
                         products={products}
+                        salesProducts={salesProducts}
                         isSubmitting={isSubmitting}
                         submitStatus={submitStatus}
                         onSubmit={submitTransaction}

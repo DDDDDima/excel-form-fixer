@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { BackgroundBlobs } from "./BackgroundBlobs";
 
 interface NavItemProps {
     to: string;
@@ -101,7 +102,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-muted/30 font-sans antialiased">
+        <div className="flex min-h-screen bg-[#0a0a0b] text-slate-200 font-sans antialiased selection:bg-primary/30">
+            <BackgroundBlobs />
             {/* Desktop Sidebar */}
             <aside className="hidden lg:block w-72 sticky top-0 h-screen">
                 <SidebarContent activePath={location.pathname} />

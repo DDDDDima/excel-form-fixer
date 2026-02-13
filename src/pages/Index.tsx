@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 const Index = () => {
   const {
     products,
+    salesProducts,
     lowStockItems,
     isSubmitting,
     submitStatus,
@@ -73,7 +74,7 @@ const Index = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Content Skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-card rounded-lg p-6 shadow-sm">
@@ -113,6 +114,7 @@ const Index = () => {
               <div>
                 <TransactionForm
                   products={products}
+                  salesProducts={salesProducts}
                   isSubmitting={isSubmitting}
                   submitStatus={submitStatus}
                   onSubmit={submitTransaction}

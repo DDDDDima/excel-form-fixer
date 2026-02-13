@@ -34,6 +34,7 @@ export interface InventoryData {
   products: SheetProduct[];
   transactions: SheetTransaction[];
   directory: SheetDirectoryItem[];
+  salesProducts: { name: string; category: string; unit: string }[];
 }
 
 /**
@@ -101,7 +102,13 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
       total: parseFloat(row.total) || undefined,
     }));
 
-    return { products, transactions, directory };
+    const salesProducts = (data.salesProducts || []).map((row: any) => ({
+      name: row.name || "",
+      category: row.category || "Готова продукція",
+      unit: row.unit || "шт"
+    }));
+
+    return { products, transactions, directory, salesProducts };
   } catch (error) {
     console.error("Error fetching inventory from Google Sheets:", error);
     throw error;

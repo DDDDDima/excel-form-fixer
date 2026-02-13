@@ -6,6 +6,7 @@ import { fetchInventoryFromSheets, submitTransactionToSheets } from "@/services/
 
 export function useInventory() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [salesProducts, setSalesProducts] = useState<Product[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
@@ -56,6 +57,19 @@ export function useInventory() {
               type: t.type,
               pricePerUnit: t.pricePerUnit,
               total: t.total,
+            }))
+          );
+        }
+
+        if (data.salesProducts && data.salesProducts.length > 0) {
+          setSalesProducts(
+            data.salesProducts.map((p, index) => ({
+              id: `sale-${index}`,
+              name: p.name,
+              category: p.category,
+              unit: p.unit,
+              criticalLevel: 0,
+              currentStock: 0,
             }))
           );
         }
@@ -193,6 +207,7 @@ export function useInventory() {
 
   return {
     products,
+    salesProducts,
     transactions,
     lowStockItems,
     isSubmitting,

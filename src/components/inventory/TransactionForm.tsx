@@ -24,6 +24,7 @@ import { Product, categories, Category, Transaction } from "@/data/products";
 
 interface TransactionFormProps {
   products: Product[];
+  salesProducts: Product[];
   isSubmitting: boolean;
   submitStatus: string | null;
   onSubmit: (transaction: Omit<Transaction, "id">) => void;
@@ -32,6 +33,7 @@ interface TransactionFormProps {
 
 export function TransactionForm({
   products,
+  salesProducts,
   isSubmitting,
   submitStatus,
   onSubmit,
@@ -49,14 +51,21 @@ export function TransactionForm({
 
   // Filter products by category
   const filteredProducts = useMemo(() => {
+    // If Sale, use salesProducts
+    if (transactionType === "Продаж") {
+      return salesProducts;
+    }
+
+    // For other types, use standard products and filter by category
     if (selectedCategory === "Всі категорії") return products;
     return products.filter((p) => p.category === selectedCategory);
-  }, [products, selectedCategory]);
+  }, [products, salesProducts, selectedCategory, transactionType]);
 
   // Selected product details
   const selectedProduct = useMemo(() => {
-    return products.find((p) => p.id === selectedProductId);
-  }, [products, selectedProductId]);
+    const allAvailable = [...products, ...salesProducts];
+    return allAvailable.find((p) => p.id === selectedProductId);
+  }, [products, salesProducts, selectedProductId]);
 
   // Auto-calculate total
   const total = useMemo(() => {
@@ -140,28 +149,30 @@ export function TransactionForm({
             </Popover>
           </div>
 
-          {/* Category Filter */}
-          <div className="space-y-2">
-            <Label>Категорія</Label>
-            <Select
-              value={selectedCategory}
-              onValueChange={(val) => {
-                setSelectedCategory(val as Category);
-                setSelectedProductId("");
-              }}
-            >
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Оберіть категорію" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Category Filter - only show if not sales */}
+          {transactionType !== "Продаж" && (
+            <div className="space-y-2">
+              <Label>Категорія</Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={(val) => {
+                  setSelectedCategory(val as Category);
+                  setSelectedProductId("");
+                }}
+              >
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Оберіть категорію" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Product Selection */}
           <div className="space-y-2">
