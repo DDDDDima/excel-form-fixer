@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { useInventory } from "@/hooks/useInventory";
-import { AnalyticsTable } from "@/components/inventory/AnalyticsTable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useInventory } from "../hooks/useInventory";
+import { AnalyticsTable } from "../components/inventory/AnalyticsTable";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { BarChart3, TrendingUp, TrendingDown, Package } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "../components/ui/skeleton";
 
 const Analytics = () => {
     const { products, transactions, isLoading } = useInventory();

@@ -1,8 +1,8 @@
-import { useInventory } from "@/hooks/useInventory";
-import { TransactionForm } from "@/components/inventory/TransactionForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useInventory } from "../hooks/useInventory";
+import { TransactionForm } from "../components/inventory/TransactionForm";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { AlertCircle, History } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 const Transactions = () => {
     const {

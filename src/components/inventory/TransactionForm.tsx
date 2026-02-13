@@ -2,25 +2,25 @@ import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { CalendarIcon, Plus, Send } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Calendar } from "../ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "../ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { Product, Category, Transaction } from "@/data/products";
+} from "../ui/select";
+import { cn } from "../../lib/utils";
+import { Product, Category, Transaction } from "../../data/products";
 
 interface TransactionFormProps {
   products: Product[];
