@@ -1,6 +1,6 @@
 import { AlertTriangle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Product } from "@/data/products";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Product } from "../../data/products";
 
 interface LowStockAlertProps {
   items: Product[];

@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Product, Transaction, initialProducts } from "@/data/products";
-import { fetchInventoryFromSheets, submitTransactionToSheets } from "@/services/googleSheetsApi";
+import { Product, Transaction, initialProducts } from "../data/products";
+import { fetchInventoryFromSheets, submitTransactionToSheets } from "../services/googleSheetsApi";
 
 // Google Script URL is now managed in src/services/googleSheetsApi.ts
 

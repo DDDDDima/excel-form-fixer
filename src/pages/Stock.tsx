@@ -69,7 +69,7 @@ const Stock = () => {
                             <span className="h-2 w-2 rounded-full bg-primary" />
                             Поточні залишки
                         </h2>
-                        <StockTable products={products} getStockStatus={getStockStatus} />
+                        <StockTable products={products} getStockStatus={getStockStatus} categories={categories} />
                     </div>
                 </>
             )}

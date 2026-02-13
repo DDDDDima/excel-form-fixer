@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../ui/select";
 import {
   Table,
   TableBody,
@@ -16,17 +16,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Product, categories, Category } from "@/data/products";
+} from "../ui/table";
+import { Badge } from "../ui/badge";
+import { cn } from "../../lib/utils";
+import { Product, Category } from "../../data/products";
 
 interface StockTableProps {
   products: Product[];
+  categories: Category[];
   getStockStatus: (product: Product) => "normal" | "warning" | "warning-high" | "critical";
 }
 
-export function StockTable({ products, getStockStatus }: StockTableProps) {
+export function StockTable({ products, categories, getStockStatus }: StockTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<Category>("Всі категорії");
 

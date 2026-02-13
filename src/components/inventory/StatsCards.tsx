@@ -1,5 +1,5 @@
 import { Package, AlertCircle, TrendingUp } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../ui/card";
 
 interface StatsCardsProps {
   totalProducts: number;
