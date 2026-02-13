@@ -136,9 +136,10 @@ export function useInventory() {
             const change = transaction.type === "Прихід"
               ? transaction.quantity
               : -transaction.quantity; // Both 'Продаж' and 'Списання' decrease stock
+            const newStock = p.currentStock + change;
             return {
               ...p,
-              currentStock: Math.max(0, p.currentStock + change),
+              currentStock: Math.max(0, parseFloat(newStock.toFixed(4))),
             };
           }
           return p;

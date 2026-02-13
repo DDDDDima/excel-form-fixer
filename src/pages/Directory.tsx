@@ -55,7 +55,7 @@ const Directory = () => {
                                         </TableCell>
                                         <TableCell>{product.unit}</TableCell>
                                         <TableCell className="text-right font-mono">
-                                            {product.criticalLevel}
+                                            {Number(product.criticalLevel).toFixed(2)}
                                         </TableCell>
                                         <TableCell>
                                             {product.currentStock <= product.criticalLevel && (

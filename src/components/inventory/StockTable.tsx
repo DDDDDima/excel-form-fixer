@@ -145,10 +145,10 @@ export function StockTable({ products, categories, getStockStatus }: StockTableP
                         {product.category}
                       </TableCell>
                       <TableCell className="text-center font-semibold">
-                        {product.currentStock} {product.unit}
+                        {Number(product.currentStock).toFixed(2)} {product.unit}
                       </TableCell>
                       <TableCell className="hidden sm:table-cell text-center text-muted-foreground">
-                        {product.criticalLevel} {product.unit}
+                        {Number(product.criticalLevel).toFixed(2)} {product.unit}
                       </TableCell>
                       <TableCell className="text-center">
                         {getStatusBadge(status)}

@@ -77,18 +77,18 @@ export const AnalyticsTable = ({ data }: AnalyticsTableProps) => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right text-green-400">
-                                            {item.receipts > 0 ? `+${item.receipts.toFixed(1)}` : "0"} {item.unit}
+                                            {item.receipts > 0 ? `+${item.receipts.toFixed(2)}` : "0.00"} {item.unit}
                                         </TableCell>
                                         <TableCell className="text-right text-red-400">
-                                            {item.sales > 0 ? `-${item.sales.toFixed(1)}` : "0"} {item.unit}
+                                            {item.sales > 0 ? `-${item.sales.toFixed(2)}` : "0.00"} {item.unit}
                                         </TableCell>
                                         <TableCell className="text-right text-orange-400">
-                                            {item.losses > 0 ? `-${item.losses.toFixed(1)}` : "0"} {item.unit}
+                                            {item.losses > 0 ? `-${item.losses.toFixed(2)}` : "0.00"} {item.unit}
                                         </TableCell>
                                         <TableCell className={`text-right font-bold ${item.netChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                            {item.netChange > 0 ? `+${item.netChange.toFixed(1)}` : item.netChange.toFixed(1)}
+                                            {item.netChange > 0 ? `+${item.netChange.toFixed(2)}` : item.netChange.toFixed(2)}
                                         </TableCell>
-                                        <TableCell className="text-right font-mono">{item.currentStock.toFixed(1)} {item.unit}</TableCell>
+                                        <TableCell className="text-right font-mono">{item.currentStock.toFixed(2)} {item.unit}</TableCell>
                                     </TableRow>
                                 ))
                             )}
