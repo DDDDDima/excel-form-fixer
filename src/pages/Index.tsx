@@ -29,7 +29,7 @@ const Index = () => {
     <div className="bg-transparent">
       {/* Header */}
       <header className="glass shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
@@ -54,7 +54,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 py-6">
         {/* Error Alert */}
         {loadError && (
           <Alert variant="destructive" className="mb-6">
@@ -110,7 +110,7 @@ const Index = () => {
             />
 
             {/* Main Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8">
               {/* Transaction Form */}
               <div>
                 <TransactionForm

@@ -162,16 +162,16 @@ export function TransactionForm({
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {/* 2. Date Picker */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-muted-foreground">Дата</Label>
+              <Label className="text-sm font-semibold text-muted-foreground">Дата транзакції</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal bg-white/5 border-white/10",
+                      "w-full h-11 justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -179,7 +179,7 @@ export function TransactionForm({
                     {date ? format(date, "PPP", { locale: uk }) : "Оберіть дату"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover" align="start">
+                <PopoverContent className="w-auto p-0 bg-popover border-white/10" align="start">
                   <Calendar
                     mode="single"
                     selected={date}
@@ -193,7 +193,7 @@ export function TransactionForm({
 
             {/* 3. Category Filter */}
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-muted-foreground">Категорія</Label>
+              <Label className="text-sm font-semibold text-muted-foreground">Категорія товарів</Label>
               <Select
                 value={selectedCategory}
                 onValueChange={(val) => {
@@ -204,10 +204,10 @@ export function TransactionForm({
                   }
                 }}
               >
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="bg-white/5 border-white/10 h-11">
                   <SelectValue placeholder="Оберіть категорію" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
+                <SelectContent className="bg-popover z-50 border-white/10">
                   {categories.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
