@@ -11,112 +11,14 @@ export function useInventory() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
 
-  // Loading states for initial data fetch
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  // Fetch data from Google Sheets on mount
-  useEffect(() => {
-    async function loadInventoryData() {
-      setIsLoading(true);
-      setLoadError(null);
-
-      try {
-        const data = await fetchInventoryFromSheets();
-
-        if (data.directory && data.directory.length > 0) {
-          // Use directory as the primary list of products
-          const productsFromSheet = data.directory.map((dirItem, index) => {
-            const stockItem = data.products.find(
-              (p) => p.name.toLowerCase() === dirItem.name.toLowerCase()
-            );
-
-            return {
-              id: `sheet-${index}`,
-              name: dirItem.name,
-              category: dirItem.category,
-              unit: dirItem.unit,
-              criticalLevel: dirItem.criticalLevel || 0,
-              currentStock: stockItem ? stockItem.currentStock : 0,
-            };
-          });
-
-          setProducts(productsFromSheet);
-        }
-
-        if (data.transactions && data.transactions.length > 0) {
-          setTransactions(
-            data.transactions.map((t) => ({
-              id: t.id,
-              date: t.date,
-              productId: "",
-              productName: t.productName,
-              category: t.category,
-              quantity: t.quantity,
-              unit: t.unit,
-              type: t.type,
-              pricePerUnit: t.pricePerUnit,
-              total: t.total,
-            }))
-          );
-        }
-
-        if (data.salesProducts && data.salesProducts.length > 0) {
-          setSalesProducts(
-            data.salesProducts.map((p, index) => ({
-              id: `sale-${index}`,
-              name: p.name,
-              category: p.category,
-              unit: p.unit,
-              criticalLevel: 0,
-              currentStock: 0,
-            }))
-          );
-        }
-      } catch (error) {
-        console.error("Failed to load inventory data:", error);
-        setLoadError("Не вдалося завантажити дані з Google Sheets. Перевірте підключення.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadInventoryData();
-  }, []);
-
-  // Calculate low stock items
-  const lowStockItems = useMemo(() => {
-    return products.filter((p) => p.currentStock <= p.criticalLevel);
-  }, [products]);
-
-  // Calculate stock status for a product
-  const getStockStatus = useCallback((product: Product) => {
-    if (product.criticalLevel === 0) return "normal";
-    const ratio = product.currentStock / product.criticalLevel;
-    if (ratio <= 1) return "critical"; // At or below critical
-    if (ratio <= 1.5) return "warning-high"; // Within 50% of critical (orange)
-    if (ratio <= 2) return "warning"; // Within 100% of critical (yellow)
-    return "normal"; // More than 2x critical level
-  }, []);
-
-  // Add a new product to catalog
-  const addProduct = useCallback((product: Omit<Product, "id" | "currentStock">) => {
-    const newProduct: Product = {
-      ...product,
-      id: `custom-${Date.now()}`,
-      currentStock: 0,
-    };
-    setProducts((prev) => [...prev, newProduct]);
-    return newProduct;
-  }, []);
-
-  // Refresh data from Google Sheets
-  const refreshData = useCallback(async () => {
-    setIsLoading(true);
+  // Shared data loading logic
+  const loadInventoryData = useCallback(async (isRefresh = false) => {
+    if (!isRefresh) setIsLoading(true);
     setLoadError(null);
 
     try {
       const data = await fetchInventoryFromSheets();
+      console.log("Fetched inventory data:", data);
 
       if (data.directory && data.directory.length > 0) {
         const productsFromSheet = data.directory.map((dirItem, index) => {
@@ -133,16 +35,59 @@ export function useInventory() {
             currentStock: stockItem ? stockItem.currentStock : 0,
           };
         });
-
         setProducts(productsFromSheet);
+      } else if (data.products && data.products.length > 0) {
+        // Fallback to stock sheet if directory is empty
+        setProducts(data.products.map((p, i) => ({ ...p, id: p.id || `stock-${i}` })));
+      }
+
+      if (data.transactions) {
+        setTransactions(
+          data.transactions.map((t) => ({
+            id: t.id,
+            date: t.date,
+            productId: "",
+            productName: t.productName,
+            category: t.category,
+            quantity: t.quantity,
+            unit: t.unit,
+            type: t.type,
+            pricePerUnit: t.pricePerUnit,
+            total: t.total,
+          }))
+        );
+      }
+
+      if (data.salesProducts) {
+        setSalesProducts(
+          data.salesProducts.map((p, index) => ({
+            id: `sale-${index}`,
+            name: p.name,
+            category: p.category,
+            unit: p.unit,
+            criticalLevel: 0,
+            currentStock: 0,
+          }))
+        );
       }
     } catch (error) {
-      console.error("Failed to refresh inventory data:", error);
-      setLoadError("Не вдалося оновити дані з Google Sheets.");
+      console.error("Failed to load inventory data:", error);
+      setLoadError("Не вдалося завантажити дані з Google Sheets. Перевірте підключення.");
     } finally {
-      setIsLoading(false);
+      if (!isRefresh) setIsLoading(false);
     }
   }, []);
+
+  // Fetch data from Google Sheets on mount
+  useEffect(() => {
+    loadInventoryData();
+  }, [loadInventoryData]);
+
+  const refreshData = useCallback(async () => {
+    setIsLoading(true);
+    await loadInventoryData(true);
+    setIsLoading(false);
+  }, [loadInventoryData]);
 
 
   // Submit transaction

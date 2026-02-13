@@ -64,6 +64,9 @@ export function TransactionForm({
       return transactionType === "Продаж" ? salesProducts : products;
     }
 
+    // If we're in sale mode but category is an ingredient category, 
+    // we should probably still show the ingredients if they want to sell them directly?
+    // But usually salesProducts only contains finished goods.
     return products.filter((p) => p.category === selectedCategory);
   }, [products, salesProducts, selectedCategory, transactionType]);
 
@@ -155,33 +158,31 @@ export function TransactionForm({
             </Popover>
           </div>
 
-          {/* Category Filter - only show if not sales */}
-          {transactionType !== "Продаж" && (
-            <div className="space-y-2">
-              <Label>Категорія</Label>
-              <Select
-                value={selectedCategory}
-                onValueChange={(val) => {
-                  setSelectedCategory(val as Category);
-                  setSelectedProductId("");
-                  if (val === "готовий товар") {
-                    setTransactionType("Продаж");
-                  }
-                }}
-              >
-                <SelectTrigger className="bg-white/5 border-white/10">
-                  <SelectValue placeholder="Оберіть категорію" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          {/* Category Filter */}
+          <div className="space-y-2">
+            <Label>Категорія</Label>
+            <Select
+              value={selectedCategory}
+              onValueChange={(val) => {
+                setSelectedCategory(val as Category);
+                setSelectedProductId("");
+                if (val === "готовий товар") {
+                  setTransactionType("Продаж");
+                }
+              }}
+            >
+              <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectValue placeholder="Оберіть категорію" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover z-50">
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Product Selection */}
           <div className="space-y-2">
@@ -239,7 +240,13 @@ export function TransactionForm({
             <Label>Тип операції</Label>
             <Select
               value={transactionType}
-              onValueChange={(val) => setTransactionType(val as "Прихід" | "Продаж" | "Списання")}
+              onValueChange={(val) => {
+                const type = val as "Прихід" | "Продаж" | "Списання";
+                setTransactionType(type);
+                if (type === "Продаж" && selectedCategory === "Всі категорії") {
+                  setSelectedCategory("готовий товар");
+                }
+              }}
             >
               <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue />
