@@ -20,11 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Product, categories, Category, Transaction } from "@/data/products";
+import { Product, Category, Transaction } from "@/data/products";
 
 interface TransactionFormProps {
   products: Product[];
   salesProducts: Product[];
+  categories: Category[];
   isSubmitting: boolean;
   submitStatus: string | null;
   onSubmit: (transaction: Omit<Transaction, "id">) => void;
@@ -34,6 +35,7 @@ interface TransactionFormProps {
 export function TransactionForm({
   products,
   salesProducts,
+  categories,
   isSubmitting,
   submitStatus,
   onSubmit,
@@ -51,13 +53,17 @@ export function TransactionForm({
 
   // Filter products by category
   const filteredProducts = useMemo(() => {
-    // If Sale, use salesProducts
-    if (transactionType === "Продаж") {
+    // Specialized logic for "готовий товар" (sourced from L1:L11 via salesProducts)
+    if (selectedCategory === "готовий товар") {
       return salesProducts;
     }
 
-    // For other types, use standard products and filter by category
-    if (selectedCategory === "Всі категорії") return products;
+    // Default filtering for other categories
+    if (selectedCategory === "Всі категорії" || !selectedCategory) {
+      // If sale, show everything if category is not specified, but usually it's better to stay in specific list
+      return transactionType === "Продаж" ? salesProducts : products;
+    }
+
     return products.filter((p) => p.category === selectedCategory);
   }, [products, salesProducts, selectedCategory, transactionType]);
 

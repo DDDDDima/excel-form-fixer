@@ -205,11 +205,19 @@ export function useInventory() {
     ).length;
   }, [transactions]);
 
+  // Extract unique categories from products for filtering
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(products.map(p => p.category)))
+      .filter(c => c && c !== "Запас" && c !== "Інше");
+    return ["Всі категорії", "готовий товар", ...uniqueCategories];
+  }, [products]);
+
   return {
     products,
     salesProducts,
     transactions,
     lowStockItems,
+    categories,
     isSubmitting,
     submitStatus,
     todayTransactionsCount,

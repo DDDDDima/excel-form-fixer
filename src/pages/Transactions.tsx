@@ -8,6 +8,7 @@ const Transactions = () => {
     const {
         products,
         salesProducts,
+        categories,
         isSubmitting,
         submitStatus,
         transactions,
@@ -39,6 +40,7 @@ const Transactions = () => {
                     <TransactionForm
                         products={products}
                         salesProducts={salesProducts}
+                        categories={categories}
                         isSubmitting={isSubmitting}
                         submitStatus={submitStatus}
                         onSubmit={submitTransaction}

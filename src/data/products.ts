@@ -8,17 +8,7 @@ export interface Product {
   currentStock: number;
 }
 
-export const categories = [
-  "Всі категорії",
-  "Ягоди та Фрукти",
-  "Шоколад",
-  "Дубайський Десерт",
-  "Сиропи",
-  "Бар",
-  "Витратні матеріали",
-] as const;
-
-export type Category = (typeof categories)[number];
+export type Category = string;
 
 // Initial product catalog (to be synced with 'Довідник' tab)
 export const initialProducts: Product[] = [];
