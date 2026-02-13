@@ -21,8 +21,8 @@ const Directory = () => {
                 </Badge>
             </div>
 
-            <Card className="shadow-sm border-0 overflow-hidden">
-                <CardHeader className="bg-muted/50 border-b">
+            <Card className="shadow-sm border-0 overflow-hidden glass">
+                <CardHeader className="bg-white/5 border-b border-white/5">
                     <CardTitle className="text-lg flex items-center gap-2">
                         <BookOpen className="h-5 w-5 text-primary" />
                         База інгредієнтів
@@ -36,7 +36,7 @@ const Directory = () => {
                     ) : (
                         <Table>
                             <TableHeader>
-                                <TableRow className="hover:bg-transparent border-muted">
+                                <TableRow className="hover:bg-transparent border-white/5">
                                     <TableHead className="w-[300px]">Назва товару</TableHead>
                                     <TableHead>Категорія</TableHead>
                                     <TableHead>Од. вим.</TableHead>
@@ -46,10 +46,10 @@ const Directory = () => {
                             </TableHeader>
                             <TableBody>
                                 {products.map((product) => (
-                                    <TableRow key={product.id} className="group hover:bg-muted/30 transition-colors">
+                                    <TableRow key={product.id} className="group hover:bg-white/5 transition-colors border-white/5">
                                         <TableCell className="font-medium">{product.name}</TableCell>
                                         <TableCell>
-                                            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
+                                            <div className="inline-flex items-center rounded-full border border-white/10 px-2.5 py-0.5 text-xs font-semibold bg-white/5 text-primary">
                                                 {product.category}
                                             </div>
                                         </TableCell>

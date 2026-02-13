@@ -112,7 +112,7 @@ export function TransactionForm({
   };
 
   return (
-    <Card className="shadow-sm border-0 mb-6">
+    <Card className="shadow-sm border-0 glass mb-6 overflow-hidden">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
           <Plus className="h-5 w-5" />
@@ -195,7 +195,7 @@ export function TransactionForm({
                   onChange={(e) => setCustomProductName(e.target.value)}
                 />
                 <Select value={customProductUnit} onValueChange={setCustomProductUnit}>
-                  <SelectTrigger className="bg-background">
+                  <SelectTrigger className="bg-white/5 border-white/10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover z-50">
@@ -283,7 +283,7 @@ export function TransactionForm({
 
           {/* Total */}
           {total > 0 && (
-            <div className="p-3 bg-muted rounded-lg">
+            <div className="p-3 bg-white/10 rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Сума:</span>
                 <span className="text-xl font-bold">{total.toFixed(2)} грн</span>

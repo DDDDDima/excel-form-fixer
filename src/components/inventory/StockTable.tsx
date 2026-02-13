@@ -72,7 +72,7 @@ export function StockTable({ products, getStockStatus }: StockTableProps) {
   };
 
   return (
-    <Card className="shadow-sm border-0">
+    <Card className="shadow-sm border-0 glass overflow-hidden">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg">📊 Огляд залишків</CardTitle>
         <div className="flex flex-col sm:flex-row gap-3 mt-3">
@@ -106,7 +106,7 @@ export function StockTable({ products, getStockStatus }: StockTableProps) {
         <div className="rounded-lg border overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50">
+              <TableRow className="bg-white/5 border-white/5 hover:bg-white/10 transition-colors">
                 <TableHead className="font-semibold">Товар</TableHead>
                 <TableHead className="font-semibold hidden sm:table-cell">Категорія</TableHead>
                 <TableHead className="font-semibold text-center">Залишок</TableHead>
@@ -128,9 +128,10 @@ export function StockTable({ products, getStockStatus }: StockTableProps) {
                     <TableRow
                       key={product.id}
                       className={cn(
-                        status === "critical" && "bg-red-50",
-                        status === "warning-high" && "bg-orange-50",
-                        status === "warning" && "bg-yellow-50"
+                        "hover:bg-white/5 transition-colors border-white/5",
+                        status === "critical" && "bg-red-500/10",
+                        status === "warning-high" && "bg-orange-500/10",
+                        status === "warning" && "bg-yellow-500/10"
                       )}
                     >
                       <TableCell className="font-medium">
