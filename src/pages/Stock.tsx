@@ -16,6 +16,7 @@ const Stock = () => {
         loadError,
         getStockStatus,
         refreshData,
+        categories,
     } = useInventory();
 
     return (
