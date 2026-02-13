@@ -7,6 +7,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 import Stock from "./pages/Stock";
 import Transactions from "./pages/Transactions";
 import Directory from "./pages/Directory";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,7 @@ const App = () => (
             <Route path="/" element={<Stock />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/directory" element={<Directory />} />
-            <Route path="/analytics" element={<Stock />} /> {/* Placeholder to Stock for now */}
+            <Route path="/analytics" element={<Analytics />} />
             <Route path="/settings" element={<Stock />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
