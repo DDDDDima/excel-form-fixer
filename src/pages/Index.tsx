@@ -25,9 +25,9 @@ const Index = () => {
   } = useInventory();
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="bg-transparent">
       {/* Header */}
-      <header className="bg-card shadow-sm border-b">
+      <header className="glass shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -132,7 +132,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="text-center py-4 text-xs text-muted-foreground border-t bg-card mt-8">
+      <footer className="text-center py-6 text-xs text-muted-foreground border-t glass mt-8">
         Система Обліку Запасів © {new Date().getFullYear()}
       </footer>
     </div>
