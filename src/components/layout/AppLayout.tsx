@@ -102,7 +102,7 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen bg-transparent text-slate-200 font-sans antialiased selection:bg-primary/30">
+        <div className="relative flex min-h-screen bg-transparent text-slate-200 font-sans antialiased selection:bg-primary/30 overflow-x-hidden">
             <BackgroundBlobs />
             {/* Desktop Sidebar */}
             <aside className="hidden lg:block w-72 sticky top-0 h-screen">

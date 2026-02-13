@@ -86,7 +86,33 @@ All colors MUST be HSL.
 }
 
 .glass {
-  @apply bg-black/30 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  @apply bg-black/20 backdrop-blur-2xl border border-white/10 shadow-2xl;
+}
+
+/* Global Table Transparency Force */
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td {
+  background-color: transparent !important;
+}
+
+.bg-card,
+.bg-muted,
+.bg-background {
+  @apply transition-colors;
+}
+
+/* Ensure white text is persistent for critical states on dark bg */
+.text-foreground {
+  @apply text-white !important;
+}
+
+.text-muted-foreground {
+  @apply text-white/60 !important;
 }
 
 @keyframes slide-up {

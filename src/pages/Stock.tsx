@@ -64,7 +64,7 @@ const Stock = () => {
                         todayTransactions={todayTransactionsCount}
                     />
 
-                    <div className="bg-card rounded-2xl shadow-sm border p-6">
+                    <div className="glass rounded-2xl shadow-sm border border-white/5 p-6">
                         <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-primary" />
                             Поточні залишки
