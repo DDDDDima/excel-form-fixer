@@ -225,11 +225,19 @@ export function TransactionForm({
                   <SelectValue placeholder="Оберіть товар" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50 max-h-[300px]">
-                  {filteredProducts.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name} ({product.unit})
-                    </SelectItem>
-                  ))}
+                  {filteredProducts.length === 0 ? (
+                    <div className="p-4 text-sm text-center text-muted-foreground italic">
+                      {selectedCategory === "готовий товар"
+                        ? "Товари відсутні в діапазоні L1:L11 на аркуші Прихід_форми"
+                        : "У цій категорії поки немає товарів"}
+                    </div>
+                  ) : (
+                    filteredProducts.map((product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name} ({product.unit})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             )}
