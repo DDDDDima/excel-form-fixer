@@ -48,7 +48,7 @@ const Transactions = () => {
 
                 {/* History Section */}
                 <div className="xl:col-span-2">
-                    <Card className="shadow-sm border-0 h-full">
+                    <Card className="shadow-sm border-0 h-full glass overflow-hidden">
                         <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2">
                                 <History className="h-5 w-5" />
@@ -71,7 +71,7 @@ const Transactions = () => {
                                     {transactions.slice(0, 10).map((t) => (
                                         <div
                                             key={t.id}
-                                            className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-transparent hover:border-border transition-colors shadow-sm"
+                                            className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors shadow-sm"
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
