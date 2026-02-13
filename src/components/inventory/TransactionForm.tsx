@@ -164,6 +164,9 @@ export function TransactionForm({
                 onValueChange={(val) => {
                   setSelectedCategory(val as Category);
                   setSelectedProductId("");
+                  if (val === "готовий товар") {
+                    setTransactionType("Продаж");
+                  }
                 }}
               >
                 <SelectTrigger className="bg-white/5 border-white/10">
