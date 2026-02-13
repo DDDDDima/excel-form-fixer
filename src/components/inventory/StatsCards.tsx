@@ -13,29 +13,29 @@ export function StatsCards({ totalProducts, lowStockCount, todayTransactions }: 
       title: "Всього товарів",
       value: totalProducts,
       icon: Package,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-blue-400",
+      bgColor: "bg-blue-500/10",
     },
     {
       title: "Критичний запас",
       value: lowStockCount,
       icon: AlertCircle,
-      color: lowStockCount > 0 ? "text-red-600" : "text-green-600",
-      bgColor: lowStockCount > 0 ? "bg-red-50" : "bg-green-50",
+      color: lowStockCount > 0 ? "text-red-400" : "text-green-400",
+      bgColor: lowStockCount > 0 ? "bg-red-500/10" : "bg-green-500/10",
     },
     {
       title: "Операцій сьогодні",
       value: todayTransactions,
       icon: TrendingUp,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/10",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       {stats.map((stat) => (
-        <Card key={stat.title} className="border-0 shadow-sm">
+        <Card key={stat.title} className="border-0 shadow-sm glass overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <div className={`p-3 rounded-lg ${stat.bgColor}`}>

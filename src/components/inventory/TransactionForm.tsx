@@ -160,7 +160,7 @@ export function TransactionForm({
                   setSelectedProductId("");
                 }}
               >
-                <SelectTrigger className="bg-background">
+                <SelectTrigger className="bg-white/5 border-white/10">
                   <SelectValue placeholder="Оберіть категорію" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50">
@@ -211,7 +211,7 @@ export function TransactionForm({
                 value={selectedProductId}
                 onValueChange={setSelectedProductId}
               >
-                <SelectTrigger className="bg-background">
+                <SelectTrigger className="bg-white/5 border-white/10">
                   <SelectValue placeholder="Оберіть товар" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50 max-h-[300px]">
@@ -232,7 +232,7 @@ export function TransactionForm({
               value={transactionType}
               onValueChange={(val) => setTransactionType(val as "Прихід" | "Продаж" | "Списання")}
             >
-              <SelectTrigger className="bg-background">
+              <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
