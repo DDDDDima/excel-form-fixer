@@ -47,7 +47,7 @@ export function TransactionForm({
   const [customProductName, setCustomProductName] = useState("");
   const [customProductUnit, setCustomProductUnit] = useState("кг");
   const [quantity, setQuantity] = useState<string>("");
-  const [pricePerUnit, setPricePerUnit] = useState<string>("");
+  const [totalSum, setTotalSum] = useState<string>("");
   const [transactionType, setTransactionType] = useState<"Прихід" | "Продаж" | "Списання">("Продаж");
   const [date, setDate] = useState<Date>(new Date());
 
@@ -76,12 +76,6 @@ export function TransactionForm({
     return allAvailable.find((p) => p.id === selectedProductId);
   }, [products, salesProducts, selectedProductId]);
 
-  // Auto-calculate total
-  const total = useMemo(() => {
-    const qty = parseFloat(quantity) || 0;
-    const price = parseFloat(pricePerUnit) || 0;
-    return qty * price;
-  }, [quantity, pricePerUnit]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,21 +94,25 @@ export function TransactionForm({
 
     if (!product || !quantity) return;
 
+    const qty = parseFloat(quantity);
+    const sum = parseFloat(totalSum);
+    const calculatedPrice = (qty > 0 && sum > 0) ? sum / qty : undefined;
+
     onSubmit({
       date,
       productId: product.id,
       productName: product.name,
       category: product.category,
-      quantity: parseFloat(quantity),
+      quantity: qty,
       unit: product.unit,
       type: transactionType as "Прихід" | "Продаж" | "Списання",
-      pricePerUnit: parseFloat(pricePerUnit) || undefined,
-      total: total || undefined,
+      pricePerUnit: calculatedPrice,
+      total: sum || undefined,
     });
 
     // Reset form
     setQuantity("");
-    setPricePerUnit("");
+    setTotalSum("");
     setSelectedProductId("");
     setCustomProductName("");
     setIsCustomProduct(false);
@@ -299,26 +297,17 @@ export function TransactionForm({
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Ціна за од. (грн)</Label>
+              <Label>Сума (грн)</Label>
               <Input
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                value={pricePerUnit}
-                onChange={(e) => setPricePerUnit(e.target.value)}
+                value={totalSum}
+                onChange={(e) => setTotalSum(e.target.value)}
               />
             </div>
           </div>
 
-          {/* Total */}
-          {total > 0 && (
-            <div className="p-3 bg-white/10 rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Сума:</span>
-                <span className="text-xl font-bold">{total.toFixed(2)} грн</span>
-              </div>
-            </div>
-          )}
 
           {/* Submit Button */}
           <Button
