@@ -157,7 +157,8 @@ export function useInventory() {
           category: transaction.category,
           pricePerUnit: transaction.pricePerUnit || 0,
           total: transaction.total || 0,
-          date: transaction.date.toISOString().split("T")[0],
+          date: transaction.date.toISOString(),
+          unit: transaction.unit,
         });
 
         setSubmitStatus("Дані успішно відправлено!");
