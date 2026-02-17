@@ -279,6 +279,67 @@ function testTelegramConnection() {
     return result;
 }
 
+/**
+ * Перевіряє всі залишки на складі та надсилає зведене сповіщення в Telegram
+ * Може бути встановлено як тригер (наприклад, щоранку)
+ */
+function checkInventoryAndNotify() {
+    const stockSheet = SS.getSheetByName(TABS.STOCK);
+    if (!stockSheet) {
+        console.error("Аркуш Склад не знайдено");
+        return;
+    }
+
+    const stockData = stockSheet.getDataRange().getValues();
+    const directory = fetchDirectoryAsMap();
+    let lowStockItems = [];
+
+    // Пропускаємо заголовок: Назва(0), Одиниця(1), Закуплено(2), Витрачено(3), Поточний залиш.(4)
+    for (let i = 1; i < stockData.length; i++) {
+        const itemName = stockData[i][0] ? stockData[i][0].toString().trim() : "";
+        if (!itemName) continue;
+
+        const currentStock = parseFloat(stockData[i][4]) || 0;
+        const criticalLevel = directory[itemName.toLowerCase()] || 0;
+
+        // Додаємо в список, якщо запас низький і рівень критичності взагалі вказаний (> 0)
+        if (currentStock <= criticalLevel && criticalLevel > 0) {
+            lowStockItems.push("• *" + itemName + "*: залишок `" + currentStock + "` (критично `" + criticalLevel + "`)");
+        }
+    }
+
+    if (lowStockItems.length > 0) {
+        const config = getTelegramConfig();
+        if (config.token && config.chatId) {
+            const message = "⚠️ *Критичні залишки на ранок:* \n\n" + lowStockItems.join("\n");
+            sendTelegramMessage(message, config);
+            console.log("Відправлено сповіщення про " + lowStockItems.length + " товарів.");
+        }
+    } else {
+        console.log("Всі залишки в нормі.");
+    }
+}
+
+/**
+ * Отримує всі дані з Довідника у вигляді об'єкта {назва: крит_рівень} для швидкого пошуку
+ */
+function fetchDirectoryAsMap() {
+    const dirSheet = SS.getSheetByName(TABS.DIRECTORY);
+    if (!dirSheet) return {};
+
+    const data = dirSheet.getDataRange().getValues();
+    const map = {};
+
+    // Довідник: Категорія(0), Назва(1), Од.вим(2), Крит.рівень(3)
+    for (let i = 1; i < data.length; i++) {
+        const name = data[i][1] ? data[i][1].toString().trim().toLowerCase() : "";
+        if (name) {
+            map[name] = parseFloat(data[i][3]) || 0;
+        }
+    }
+    return map;
+}
+
 function writeOffIngredients(productName, quantitySold) {
     const recipeSheet = SS.getSheetByName(TABS.RECIPES);
     if (!recipeSheet) {
