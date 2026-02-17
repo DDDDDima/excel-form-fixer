@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Settings as SettingsIcon, Database, ExternalLink, ShieldCheck, Info } from "lucide-react";
+import { Settings as SettingsIcon, Database, ExternalLink, ShieldCheck, Info, Send } from "lucide-react";
 import { Button } from "../components/ui/button";
 
 const SettingsPage = () => {
@@ -38,6 +38,32 @@ const SettingsPage = () => {
                                 Відкрити Apps Script
                             </a>
                         </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Telegram Settings */}
+                <Card className="glass border-white/5">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Send className="h-5 w-5 text-blue-400" />
+                            Параметри Telegram
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                            <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Бот Токен</p>
+                                <p className="text-xs font-mono truncate text-blue-300">8515588018:AAHAx***I_Q</p>
+                            </div>
+                            <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold mb-1">Chat ID</p>
+                                <p className="text-xs font-mono text-blue-300">646188273</p>
+                            </div>
+                        </div>
+                        <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20 flex gap-3 text-xs text-blue-200">
+                            <Info className="h-4 w-4 shrink-0" />
+                            <span>Сповіщення про критичні залишки будуть приходити автоматично. Ці налаштування можна змінити у файлі `StellarCRM-GAS-Backend.js` або на листі "Налаштування" в таблиці.</span>
+                        </div>
                     </CardContent>
                 </Card>
 

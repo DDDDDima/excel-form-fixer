@@ -3,8 +3,10 @@ import { useInventory } from "../hooks/useInventory";
 import { AnalyticsTable } from "../components/inventory/AnalyticsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { BarChart3, TrendingUp, TrendingDown, Package } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { BarChart3, TrendingUp, TrendingDown, Package, Download } from "lucide-react";
 import { Skeleton } from "../components/ui/skeleton";
+import { exportToCSV } from "../lib/exportUtils";
 
 const Analytics = () => {
     const { products, transactions, isLoading } = useInventory();
@@ -81,14 +83,25 @@ const Analytics = () => {
                     <p className="text-muted-foreground mt-1">Відстеження обороту та руху товарів</p>
                 </div>
 
-                <Tabs value={period} onValueChange={setPeriod} className="w-full md:w-auto">
-                    <TabsList className="bg-white/5 border border-white/10">
-                        <TabsTrigger value="today">Сьогодні</TabsTrigger>
-                        <TabsTrigger value="7d">7 днів</TabsTrigger>
-                        <TabsTrigger value="30d">30 днів</TabsTrigger>
-                        <TabsTrigger value="all">Все</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <div className="flex flex-col md:flex-row gap-4 items-center">
+                    <Tabs value={period} onValueChange={setPeriod} className="w-full md:w-auto">
+                        <TabsList className="bg-white/5 border border-white/10">
+                            <TabsTrigger value="today">Сьогодні</TabsTrigger>
+                            <TabsTrigger value="7d">7 днів</TabsTrigger>
+                            <TabsTrigger value="30d">30 днів</TabsTrigger>
+                            <TabsTrigger value="all">Все</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 bg-white/5 border-white/10"
+                        onClick={() => exportToCSV(turnoverData, `Analytics_${period}`)}
+                    >
+                        <Download className="h-4 w-4" />
+                        Експорт
+                    </Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

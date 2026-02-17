@@ -6,6 +6,7 @@
  * 2. Процесинг транзакцій (Прихід + Продаж)
  * 3. Автоматичне оновлення залишків
  * 4. СПИСАННЯ ЗА РЕЦЕПТАМИ (Калькуляція)
+ * 5. ТЕЛЕГРАМ СПОВІЩЕННЯ ПРО НИЗЬКИЙ ЗАПАС
  */
 
 const SS = SpreadsheetApp.getActiveSpreadsheet();
@@ -15,7 +16,13 @@ const TABS = {
     SALES: 'Продажі',
     PURCHASES: 'Закупівлі',
     ARRIVALS: 'Прихід_форми',
-    RECIPES: 'Калькуляція'
+    RECIPES: 'Калькуляція',
+    CONFIG: 'Налаштування'
+};
+
+const TELEGRAM_CONFIG = {
+    TOKEN: '8515588018:AAHAxJc2azgIqXrouKV-x5pkLY0wEt0pI_Q',
+    CHAT_ID: '646188273'
 };
 
 function doGet(e) {
@@ -158,47 +165,6 @@ function processTransaction(transaction) {
     return { success: true };
 }
 
-function handleArrival(transaction) {
-    // This function is no longer used as processTransaction is centralized.
-    // Keeping it for now, but it could be removed.
-    const sheet = SS.getSheetByName(TABS.ARRIVALS);
-    if (!sheet) return { success: false, message: 'Аркуш Прихід_форми не знайдено' };
-
-    sheet.appendRow([
-        new Date(transaction.date),
-        transaction.item,
-        transaction.category,
-        transaction.quantity,
-        transaction.pricePerUnit || 0,
-        transaction.total || 0
-    ]);
-
-    updateStock(transaction.item, transaction.quantity);
-    return { success: true };
-}
-
-function handleSale(transaction) {
-    // This function is no longer used as processTransaction is centralized.
-    // Keeping it for now, but it could be removed.
-    const sheet = SS.getSheetByName(TABS.SALES);
-    if (!sheet) return { success: false, message: 'Аркуш Продажі не знайдено' };
-
-    sheet.appendRow([
-        new Date(transaction.date),
-        transaction.item,
-        transaction.quantity,
-        transaction.total || 0
-    ]);
-
-    // 1. Пряме списання самого товару (якщо він є на складі)
-    updateStock(transaction.item, -transaction.quantity);
-
-    // 2. Списання інгредієнтів за рецептом (Калькуляція)
-    writeOffIngredients(transaction.item, transaction.quantity);
-
-    return { success: true };
-}
-
 /**
  * 3. ЛОГІКА СПИСАННЯ ТА ОНОВЛЕННЯ ЗАЛИШКІВ
  */
@@ -212,13 +178,66 @@ function updateStock(itemName, change) {
     for (let i = 1; i < data.length; i++) {
         const sheetName = data[i][0] ? data[i][0].toString().trim().toLowerCase() : "";
         if (sheetName === searchName) {
-            const current = parseFloat(data[i][4]) || 0; // Поточний запас у 5-й колонці (Index 4)
-            sheet.getRange(i + 1, 5).setValue(current + change);
+            const current = parseFloat(data[i][4]) || 0;
+            const critical = parseFloat(data[i][3]) || 0;
+            const newStock = current + change;
+
+            sheet.getRange(i + 1, 5).setValue(newStock);
+
+            // Перевірка на критичний рівень та відправка в Telegram
+            if (newStock <= critical && current > critical) {
+                const config = getTelegramConfig();
+                if (config.token && config.chatId) {
+                    const message = "⚠️ *Увага! Низький запас*\n\n" +
+                        "Товар: *" + itemName + "*\n" +
+                        "Залишок: `" + newStock + "`\n" +
+                        "Критичний рівень: `" + critical + "`";
+                    sendTelegramMessage(message, config);
+                }
+            }
             return true;
         }
     }
     console.warn("Товар не знайдено на складі: " + itemName);
     return false;
+}
+
+function getTelegramConfig() {
+    const sheet = SS.getSheetByName(TABS.CONFIG);
+    if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        let token = TELEGRAM_CONFIG.TOKEN;
+        let chatId = TELEGRAM_CONFIG.CHAT_ID;
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i][0] === 'Telegram Token') token = data[i][1];
+            if (data[i][0] === 'Telegram Chat ID') chatId = data[i][1];
+        }
+        return { token, chatId };
+    }
+    return { token: TELEGRAM_CONFIG.TOKEN, chatId: TELEGRAM_CONFIG.CHAT_ID };
+}
+
+function sendTelegramMessage(text, config) {
+    const url = "https://api.telegram.org/bot" + config.token + "/sendMessage";
+    const payload = {
+        "chat_id": config.chatId,
+        "text": text,
+        "parse_mode": "Markdown"
+    };
+
+    const options = {
+        "method": "post",
+        "contentType": "application/json",
+        "payload": JSON.stringify(payload),
+        "muteHttpExceptions": true
+    };
+
+    try {
+        UrlFetchApp.fetch(url, options);
+    } catch (e) {
+        console.error("Помилка відправки в Telegram: " + e.toString());
+    }
 }
 
 function writeOffIngredients(productName, quantitySold) {
@@ -277,19 +296,6 @@ function mapDirData(data) {
     })).filter(d => d.name && d.name !== "");
 }
 
-function mapSalesData(data) {
-    // This function is no longer used as transactions are mapped from ARRIVALS.
-    // Keeping it for now, but it could be removed.
-    // Продажі: Дата(0), Товар(1), Кількість(2), Сума(3)
-    return data.slice(1).map(row => ({
-        date: row[0],
-        productName: row[1] ? row[1].toString().trim() : "",
-        quantity: parseFloat(row[2]) || 0,
-        total: parseFloat(row[3]) || 0,
-        type: "Продаж"
-    })).filter(t => t.productName && t.productName !== "");
-}
-
 function mapTransactionsFromArrivals(data) {
     // Прихід_форми: Дата(0), Товар(1), Категорія(2), Кількість(3), Ціна(4), Сума(5), ТИП(6)
     return data.slice(1).map((row, index) => ({
@@ -299,11 +305,11 @@ function mapTransactionsFromArrivals(data) {
         productName: row[1] ? row[1].toString().trim() : "",
         category: row[2] ? row[2].toString().trim() : "",
         quantity: parseFloat(row[3]) || 0,
-        unit: "од", // Можна додати в колонку, якщо потрібно
+        unit: "од",
         type: row[6] || "Прихід",
         pricePerUnit: parseFloat(row[4]) || 0,
         total: parseFloat(row[5]) || 0
-    })).filter(t => t.date && t.item !== "").reverse(); // Перевіряємо дату та назву
+    })).filter(t => t.date && t.item !== "").reverse();
 }
 
 /**

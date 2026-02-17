@@ -3,9 +3,10 @@ import { LowStockAlert } from "../components/inventory/LowStockAlert";
 import { StatsCards } from "../components/inventory/StatsCards";
 import { StockTable } from "../components/inventory/StockTable";
 import { Button } from "../components/ui/button";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, Download } from "lucide-react";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Skeleton } from "../components/ui/skeleton";
+import { exportToCSV } from "../lib/exportUtils";
 
 const Stock = () => {
     const {
@@ -28,15 +29,26 @@ const Stock = () => {
                         Моніторинг залишків та критичних рівнів
                     </p>
                 </div>
-                <Button
-                    variant="outline"
-                    onClick={refreshData}
-                    disabled={isLoading}
-                    className="bg-card hover:bg-muted"
-                >
-                    <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-                    Оновити дані
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => exportToCSV(products, 'Current_Stock')}
+                        disabled={isLoading}
+                        className="bg-card hover:bg-muted"
+                    >
+                        <Download className="mr-2 h-4 w-4" />
+                        Експорт CSV
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={refreshData}
+                        disabled={isLoading}
+                        className="bg-card hover:bg-muted"
+                    >
+                        <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                        Оновити дані
+                    </Button>
+                </div>
             </div>
 
             {loadError && (
