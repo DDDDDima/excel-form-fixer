@@ -179,7 +179,7 @@ function updateStock(itemName, change) {
         const sheetName = data[i][0] ? data[i][0].toString().trim().toLowerCase() : "";
         if (sheetName === searchName) {
             const current = parseFloat(data[i][4]) || 0;
-            const critical = parseFloat(data[i][3]) || 0;
+            const critical = getCriticalLevel(itemName);
             const newStock = current + change;
 
             sheet.getRange(i + 1, 5).setValue(newStock);
@@ -200,6 +200,22 @@ function updateStock(itemName, change) {
     }
     console.warn("Товар не знайдено на складі: " + itemName);
     return false;
+}
+
+function getCriticalLevel(itemName) {
+    const dirSheet = SS.getSheetByName(TABS.DIRECTORY);
+    if (!dirSheet) return 0;
+    const data = dirSheet.getDataRange().getValues();
+    const searchName = itemName.toString().trim().toLowerCase();
+
+    // Довідник: Категорія(0), Назва(1), Од.вим(2), Крит.рівень(3)
+    for (let i = 1; i < data.length; i++) {
+        const name = data[i][1] ? data[i][1].toString().trim().toLowerCase() : "";
+        if (name === searchName) {
+            return parseFloat(data[i][3]) || 0;
+        }
+    }
+    return 0;
 }
 
 function getTelegramConfig() {
@@ -277,13 +293,16 @@ function writeOffIngredients(productName, quantitySold) {
  */
 function mapStockData(data) {
     // Склад: Назва(0), Одиниця(1), Закуплено(2), Витрачено(3), Поточний(4)
-    return data.slice(1).map(row => ({
-        name: row[0] ? row[0].toString().trim() : "",
-        category: "Запас",
-        unit: row[1] ? row[1].toString().trim() : "",
-        criticalLevel: 0,
-        currentStock: parseFloat(row[4]) || 0
-    })).filter(p => p.name && p.name !== "");
+    return data.slice(1).map(row => {
+        const name = row[0] ? row[0].toString().trim() : "";
+        return {
+            name: name,
+            category: "Запас",
+            unit: row[1] ? row[1].toString().trim() : "",
+            criticalLevel: getCriticalLevel(name),
+            currentStock: parseFloat(row[4]) || 0
+        };
+    }).filter(p => p.name && p.name !== "");
 }
 
 function mapDirData(data) {

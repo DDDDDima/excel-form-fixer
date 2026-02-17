@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 
 const SettingsPage = () => {
     // Current script URL - extracted from the service for display
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbxFia3oZXz58Y6cZeKK0HrskasRuB1cwIGGmymndLTBrn_5NWSp0wBTuLvO6vQNdpGL/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbzNxHdDDAD4_IMPUnNNb6XkUorjCE907Bp_HmUlr0SVfNrYSp09gs6Ow2nAT35BguqM/exec";
 
     return (
         <div className="space-y-6">
