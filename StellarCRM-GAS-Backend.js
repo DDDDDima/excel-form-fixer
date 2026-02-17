@@ -31,6 +31,9 @@ function doGet(e) {
         if (action === 'getInventory') {
             return contentResponse(fetchInventoryData());
         }
+        if (action === 'testTelegram') {
+            return contentResponse(testTelegramConnection());
+        }
     } catch (err) {
         return contentResponse({ error: err.toString() });
     }
@@ -250,10 +253,30 @@ function sendTelegramMessage(text, config) {
     };
 
     try {
-        UrlFetchApp.fetch(url, options);
+        const response = UrlFetchApp.fetch(url, options);
+        const result = JSON.parse(response.getContentText());
+        if (!result.ok) {
+            console.error("Помилка Telegram API: " + response.getContentText());
+            return { success: false, error: result.description };
+        }
+        return { success: true };
     } catch (e) {
         console.error("Помилка відправки в Telegram: " + e.toString());
+        return { success: false, error: e.toString() };
     }
+}
+
+function testTelegramConnection() {
+    const config = getTelegramConfig();
+    if (!config.token || !config.chatId) {
+        return { success: false, error: "Параметри Telegram не налаштовані (токен або Chat ID відсутні)." };
+    }
+
+    const message = "✅ *Тестове з'єднання Stellar CRM успішне!*\n\n" +
+        "Ваш бот налаштований вірно та готовий до роботи.";
+
+    const result = sendTelegramMessage(message, config);
+    return result;
 }
 
 function writeOffIngredients(productName, quantitySold) {

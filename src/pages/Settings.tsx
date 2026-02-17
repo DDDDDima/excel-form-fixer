@@ -1,11 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Settings as SettingsIcon, Database, ExternalLink, ShieldCheck, Info, Send } from "lucide-react";
+import { Settings as SettingsIcon, Database, ExternalLink, ShieldCheck, Info, Send, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { testTelegramConnection } from "../services/googleSheetsApi";
+import { toast } from "../hooks/use-toast";
 
 const SettingsPage = () => {
+    const [isTesting, setIsTesting] = useState(false);
+
     // Current script URL - extracted from the service for display
     const scriptUrl = "https://script.google.com/macros/s/AKfycbzNxHdDDAD4_IMPUnNNb6XkUorjCE907Bp_HmUlr0SVfNrYSp09gs6Ow2nAT35BguqM/exec";
+
+    const handleTestConnection = async () => {
+        setIsTesting(true);
+        try {
+            const result = await testTelegramConnection();
+            if (result.success) {
+                toast({
+                    title: "З'єднання успішне!",
+                    description: "Тестове повідомлення надіслано в Telegram.",
+                });
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Помилка з'єднання",
+                    description: result.error || "Не вдалося надіслати повідомлення.",
+                });
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Помилка запиту",
+                description: "Не вдалося з'єднатися з Google Apps Script.",
+            });
+        } finally {
+            setIsTesting(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -64,6 +95,19 @@ const SettingsPage = () => {
                             <Info className="h-4 w-4 shrink-0" />
                             <span>Сповіщення про критичні залишки будуть приходити автоматично. Ці налаштування можна змінити у файлі `StellarCRM-GAS-Backend.js` або на листі "Налаштування" в таблиці.</span>
                         </div>
+                        <Button
+                            onClick={handleTestConnection}
+                            disabled={isTesting}
+                            variant="secondary"
+                            className="w-full gap-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border-blue-500/30"
+                        >
+                            {isTesting ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Send className="h-4 w-4" />
+                            )}
+                            {isTesting ? "Перевірка..." : "Перевірити з'єднання"}
+                        </Button>
                     </CardContent>
                 </Card>
 

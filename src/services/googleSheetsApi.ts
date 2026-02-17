@@ -142,3 +142,25 @@ export async function submitTransactionToSheets(transaction: {
     throw error;
   }
 }
+
+/**
+ * Tests Telegram Connection
+ */
+export async function testTelegramConnection(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=testTelegram`, {
+      method: "GET",
+      redirect: "follow",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error testing Telegram connection:", error);
+    return { success: false, error: String(error) };
+  }
+}
