@@ -9,7 +9,7 @@ const SettingsPage = () => {
     const [isTesting, setIsTesting] = useState(false);
 
     // Current script URL - extracted from the service for display
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbzNxHdDDAD4_IMPUnNNb6XkUorjCE907Bp_HmUlr0SVfNrYSp09gs6Ow2nAT35BguqM/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycby-jCqeMG550n9YjxIKJJg8q7xLIZJX0amKihfFOGo9p5B_CxqpIhkPvWL5oCuYtMRY/exec";
 
     const handleTestConnection = async () => {
         setIsTesting(true);
