@@ -177,8 +177,9 @@ const SettingsPage = () => {
                                     {/* Images from public/backgrounds */}
                                     {[1, 2, 3, 4, 5].map((i) => {
                                         const bgName = `bg${i}.jpg`;
-                                        const bgPath = `/backgrounds/${bgName}`;
-                                        const isSelected = localStorage.getItem("app-background") === bgPath;
+                                        const bgPath = `backgrounds/${bgName}`;
+                                        const currentSelection = localStorage.getItem("app-background");
+                                        const isSelected = currentSelection?.replace(/^\//, '') === bgPath;
 
                                         return (
                                             <button
