@@ -2,7 +2,7 @@ import React from "react";
 
 export const BackgroundBlobs = () => {
     return (
-        <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none min-h-[400vh]">
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
             {/* Group 1: 0-100% */}
             <div className="absolute top-[5%] left-[5%] w-[30%] h-[30%] bg-primary/40 rounded-full blur-[80px] animate-blob" />
             <div className="absolute top-[15%] right-[5%] w-[25%] h-[25%] bg-blue-500/30 rounded-full blur-[80px] animate-blob [animation-delay:2s]" />

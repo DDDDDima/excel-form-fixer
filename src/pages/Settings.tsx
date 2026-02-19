@@ -4,6 +4,7 @@ import { Settings as SettingsIcon, Database, ExternalLink, ShieldCheck, Info, Se
 import { Button } from "../components/ui/button";
 import { testTelegramConnection } from "../services/googleSheetsApi";
 import { toast } from "../hooks/use-toast";
+import { cn } from "../lib/utils";
 
 const SettingsPage = () => {
     const [isTesting, setIsTesting] = useState(false);
@@ -127,7 +128,7 @@ const SettingsPage = () => {
                         <div className="space-y-2 pt-2">
                             <div className="flex justify-between py-2 border-b border-white/5">
                                 <span className="text-muted-foreground">Версія</span>
-                                <span className="font-mono text-white">2.1.0 (Fixed Routing)</span>
+                                <span className="font-mono text-white">2.2.0 (Custom backgrounds)</span>
                             </div>
                             <div className="flex justify-between py-2 border-b border-white/5">
                                 <span className="text-muted-foreground">Статус бази даних</span>
@@ -136,6 +137,88 @@ const SettingsPage = () => {
                             <div className="flex justify-between py-2">
                                 <span className="text-muted-foreground">Останнє оновлення</span>
                                 <span className="text-white">{new Date().toLocaleDateString("uk-UA")}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Background Settings */}
+                <Card className="glass border-white/5 lg:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="text-xl flex items-center gap-2">
+                            <SettingsIcon className="h-6 w-6 text-primary" />
+                            Налаштування зовнішнього вигляду
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="text-sm font-medium text-white mb-4">Виберіть фонове зображення</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    {/* Default Blobs Option */}
+                                    <button
+                                        onClick={() => {
+                                            localStorage.removeItem("app-background");
+                                            window.location.reload();
+                                        }}
+                                        className={cn(
+                                            "relative aspect-video rounded-xl overflow-hidden border-2 transition-all group hover:scale-105",
+                                            !localStorage.getItem("app-background") ? "border-primary shadow-lg shadow-primary/20" : "border-white/10"
+                                        )}
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                                            <span className="text-[10px] font-bold uppercase tracking-tight text-white/60">Стандартний</span>
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center font-bold text-xs">
+                                            Вибрати
+                                        </div>
+                                    </button>
+
+                                    {/* Images from public/backgrounds */}
+                                    {[1, 2, 3, 4, 5].map((i) => {
+                                        const bgName = `bg${i}.jpg`;
+                                        const bgPath = `/backgrounds/${bgName}`;
+                                        const isSelected = localStorage.getItem("app-background") === bgPath;
+
+                                        return (
+                                            <button
+                                                key={i}
+                                                onClick={() => {
+                                                    localStorage.setItem("app-background", bgPath);
+                                                    window.location.reload();
+                                                }}
+                                                className={cn(
+                                                    "relative aspect-video rounded-xl overflow-hidden border-2 transition-all group hover:scale-105",
+                                                    isSelected ? "border-primary shadow-lg shadow-primary/20" : "border-white/10"
+                                                )}
+                                            >
+                                                <img
+                                                    src={bgPath}
+                                                    alt={`Background ${i}`}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop';
+                                                    }}
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center font-bold text-xs">
+                                                    Вибрати {i}
+                                                </div>
+                                                {isSelected && (
+                                                    <div className="absolute top-2 right-2 bg-primary rounded-full p-1 shadow-lg">
+                                                        <CheckCircle2 className="h-3 w-3 text-white" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className="mt-4 p-4 bg-primary/5 rounded-xl border border-primary/20 flex gap-3 text-xs text-slate-300">
+                                    <Info className="h-4 w-4 shrink-0 text-primary" />
+                                    <span>
+                                        Щоб додати свої фото, завантажте їх у папку <code>public/backgrounds</code> з назвами <code>bg1.jpg</code>, <code>bg2.jpg</code> і т.д.
+                                        Система автоматично підтримує паралакс-ефект та оптимізацію під розмір сторінки.
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </CardContent>

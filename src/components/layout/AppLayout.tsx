@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { BackgroundBlobs } from "./BackgroundBlobs";
+import { ParallaxBackground } from "./ParallaxBackground";
 
 interface NavItemProps {
     to: string;
@@ -100,12 +101,18 @@ const SidebarContent = ({ activePath, onItemClick }: { activePath: string; onIte
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     const location = useLocation();
     const [open, setOpen] = useState(false);
+    const selectedBg = localStorage.getItem("app-background");
 
     return (
         <div className="relative flex min-h-screen bg-transparent text-slate-200 font-sans antialiased selection:bg-primary/30 overflow-x-hidden">
-            <BackgroundBlobs />
+            {selectedBg ? (
+                <ParallaxBackground imageUrl={selectedBg} />
+            ) : (
+                <BackgroundBlobs />
+            )}
+
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:block w-72 sticky top-0 h-screen">
+            <aside className="hidden lg:block w-72 sticky top-0 h-screen z-10">
                 <SidebarContent activePath={location.pathname} />
             </aside>
 
@@ -131,8 +138,8 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             {/* Main Content */}
-            <main className="flex-1 w-full lg:max-w-[calc(100vw-18rem)] pt-16 lg:pt-0">
-                <div className="p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <main className="flex-1 w-full lg:max-w-[calc(100vw-18rem)] pt-16 lg:pt-0 z-0">
+                <div className="p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen">
                     {children}
                 </div>
             </main>
