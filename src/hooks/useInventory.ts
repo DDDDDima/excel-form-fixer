@@ -139,7 +139,7 @@ export function useInventory() {
             const newStock = p.currentStock + change;
             return {
               ...p,
-              currentStock: Math.max(0, parseFloat(newStock.toFixed(4))),
+              currentStock: Math.max(0, parseFloat(newStock.toFixed(3))),
             };
           }
           return p;

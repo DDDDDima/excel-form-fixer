@@ -183,7 +183,7 @@ function updateStock(itemName, change) {
         if (sheetName === searchName) {
             const current = parseFloat(data[i][4]) || 0;
             const critical = getCriticalLevel(itemName);
-            const newStock = current + change;
+            const newStock = Math.round((current + change) * 1000) / 1000;
 
             sheet.getRange(i + 1, 5).setValue(newStock);
 
@@ -193,7 +193,7 @@ function updateStock(itemName, change) {
                 if (config.token && config.chatId) {
                     const message = "⚠️ *Увага! Низький запас*\n\n" +
                         "Товар: *" + itemName + "*\n" +
-                        "Залишок: `" + newStock + "`\n" +
+                        "Залишок: `" + newStock.toFixed(3) + "`\n" +
                         "Критичний рівень: `" + critical + "`";
                     sendTelegramMessage(message, config);
                 }
@@ -304,7 +304,7 @@ function checkInventoryAndNotify() {
 
         // Додаємо в список, якщо запас низький і рівень критичності взагалі вказаний (> 0)
         if (currentStock <= criticalLevel && criticalLevel > 0) {
-            lowStockItems.push("• *" + itemName + "*: залишок `" + currentStock + "` (критично `" + criticalLevel + "`)");
+            lowStockItems.push("• *" + itemName + "*: залишок `" + currentStock.toFixed(3) + "` (критично `" + criticalLevel + "`)");
         }
     }
 
@@ -360,7 +360,7 @@ function writeOffIngredients(productName, quantitySold) {
             const amountPerUnit = parseFloat(data[i][2]);
 
             if (ingredientName && !isNaN(amountPerUnit)) {
-                const totalChange = -(amountPerUnit * quantitySold);
+                const totalChange = -(Math.round(amountPerUnit * quantitySold * 1000) / 1000);
                 updateStock(ingredientName, totalChange);
                 console.log("Списано інгредієнт: " + ingredientName + " (" + totalChange + ")");
             }
@@ -384,7 +384,7 @@ function mapStockData(data) {
             category: "Запас",
             unit: row[1] ? row[1].toString().trim() : "",
             criticalLevel: getCriticalLevel(name),
-            currentStock: parseFloat(row[4]) || 0
+            currentStock: Math.round((parseFloat(row[4]) || 0) * 1000) / 1000
         };
     }).filter(p => p.name && p.name !== "");
 }
