@@ -19,16 +19,25 @@ export const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({ imageUrl
                 return;
             }
 
-            // At most, background moves 15% of viewport height
-            // or we can use a more robust calculation:
-            // Let's stick to a simple factor but ensure height is sufficient
-            setOffset(scrollY * 0.2);
+            // Calculate scroll percentage (0 to 1)
+            const scrollPercent = Math.min(Math.max(scrollY / scrollable, 0), 1);
+
+            // Background height is 150vh, Viewport is 100vh.
+            // Extra height = 50vh.
+            // We want to move the background up by 50vh as we scroll to the bottom.
+            const extraHeight = winHeight * 0.5;
+            setOffset(scrollPercent * extraHeight);
         };
 
         window.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("resize", handleScroll);
+
         // Initial call
         handleScroll();
-        return () => window.removeEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
     }, []);
 
     if (!imageUrl) return null;
