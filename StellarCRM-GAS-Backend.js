@@ -65,15 +65,20 @@ function fetchInventoryData() {
     if (!stockSheet) throw new Error("Аркуш '" + TABS.STOCK + "' не знайдено!");
     if (!arrivalSheet) throw new Error("Аркуш '" + TABS.ARRIVALS + "' не знайдено!");
 
+    // 1. Отримуємо довідник один раз як Map для швидкого пошуку
+    const directoryMap = fetchDirectoryAsMap();
+    const directory = Object.keys(directoryMap).map(name => ({
+        name: name,
+        category: "Довідник", // Орієнтовно, можна розширити якщо треба категорію в Map
+        unit: "",
+        criticalLevel: directoryMap[name]
+    }));
+
+    // 2. Мапимо склад, передаючи Map для O(1) пошуку критичного рівня
     const stockData = stockSheet.getDataRange().getValues();
-    const products = mapStockData(stockData);
+    const products = mapStockData(stockData, directoryMap);
 
-    let directory = [];
-    if (dirSheet) {
-        directory = mapDirData(dirSheet.getDataRange().getValues());
-    }
-
-    // Додаємо список товарів для продажу з Прихід_форми!L2:L100
+    // 3. Додаємо список товарів для продажу з Прихід_форми!L2:L100
     const lRangeData = arrivalSheet.getRange("L2:L100").getValues();
     const salesProducts = lRangeData.flat()
         .filter(name => name && name.toString().trim() !== "")
@@ -83,9 +88,9 @@ function fetchInventoryData() {
             unit: "шт"
         }));
 
-    // Отримуємо історію операцій з Прихід_форми
+    // 4. Отримуємо історію операцій (обмеженої довжини для швидкості)
     const arrivalData = arrivalSheet.getDataRange().getValues();
-    const transactions = mapTransactionsFromArrivals(arrivalData);
+    const transactions = mapTransactionsFromArrivals(arrivalData, 200); // Беремо останні 200
 
     return {
         products: products,
@@ -205,21 +210,8 @@ function updateStock(itemName, change) {
     return false;
 }
 
-function getCriticalLevel(itemName) {
-    const dirSheet = SS.getSheetByName(TABS.DIRECTORY);
-    if (!dirSheet) return 0;
-    const data = dirSheet.getDataRange().getValues();
-    const searchName = itemName.toString().trim().toLowerCase();
-
-    // Довідник: Категорія(0), Назва(1), Од.вим(2), Крит.рівень(3)
-    for (let i = 1; i < data.length; i++) {
-        const name = data[i][1] ? data[i][1].toString().trim().toLowerCase() : "";
-        if (name === searchName) {
-            return parseFloat(data[i][3]) || 0;
-        }
-    }
-    return 0;
-}
+// Видалено застарілу неефективну функцію getCriticalLevel
+// Використовуйте directoryMap для пошуку за назвою товару
 
 function getTelegramConfig() {
     const sheet = SS.getSheetByName(TABS.CONFIG);
@@ -375,7 +367,7 @@ function writeOffIngredients(productName, quantitySold) {
 /**
  * 4. МАПІНГ ДАНИХ
  */
-function mapStockData(data) {
+function mapStockData(data, directoryMap) {
     // Склад: Назва(0), Одиниця(1), Закуплено(2), Витрачено(3), Поточний(4)
     return data.slice(1).map(row => {
         const name = row[0] ? row[0].toString().trim() : "";
@@ -383,7 +375,7 @@ function mapStockData(data) {
             name: name,
             category: "Запас",
             unit: row[1] ? row[1].toString().trim() : "",
-            criticalLevel: getCriticalLevel(name),
+            criticalLevel: (directoryMap && name) ? (directoryMap[name.toLowerCase()] || 0) : 0,
             currentStock: Math.round((parseFloat(row[4]) || 0) * 1000) / 1000
         };
     }).filter(p => p.name && p.name !== "");
@@ -399,9 +391,16 @@ function mapDirData(data) {
     })).filter(d => d.name && d.name !== "");
 }
 
-function mapTransactionsFromArrivals(data) {
+function mapTransactionsFromArrivals(data, limit) {
     // Прихід_форми: Дата(0), Товар(1), Категорія(2), Кількість(3), Ціна(4), Сума(5), ТИП(6)
-    return data.slice(1).map((row, index) => ({
+    let filteredData = data.slice(1).filter(t => t[0] && t[1] !== "");
+
+    // Якщо встановлено ліміт, беремо лише останні записи
+    if (limit && filteredData.length > limit) {
+        filteredData = filteredData.slice(-limit);
+    }
+
+    return filteredData.map((row, index) => ({
         id: "tx-" + index,
         date: row[0],
         item: row[1] ? row[1].toString().trim() : "",
@@ -412,7 +411,7 @@ function mapTransactionsFromArrivals(data) {
         type: row[6] || "Прихід",
         pricePerUnit: parseFloat(row[4]) || 0,
         total: parseFloat(row[5]) || 0
-    })).filter(t => t.date && t.item !== "").reverse();
+    })).reverse(); // reverse щоб найновіші були зверху
 }
 
 /**
