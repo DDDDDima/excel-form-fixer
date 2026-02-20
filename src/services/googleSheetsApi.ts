@@ -1,6 +1,6 @@
 ﻿// Google Sheets API Web App URL
 // IMPORTANT: Paste your deployed URL here after "Deploy > New Deployment > Web App"
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5PAWxUwy7id23mBtK-drhFtvciN99uDTTstO3Aj3Aj8f9MF2GQLDrMC-yi3iSk6II/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLvMlbNnzlo_Vfo8NQMuoUsFBPUUujUxnBU5FBNPr17RMtmfuh_iOj9YGS4sCE-1f1/exec";
 
 export interface SheetProduct {
   id: string;
@@ -30,11 +30,19 @@ export interface SheetDirectoryItem {
   criticalLevel: number;
 }
 
+export interface Recipe {
+  product: string;
+  ingredient: string;
+  amount: number;
+  unit: string;
+}
+
 export interface InventoryData {
   products: SheetProduct[];
   transactions: SheetTransaction[];
   directory: SheetDirectoryItem[];
   salesProducts: { name: string; category: string; unit: string; price: number }[];
+  recipes: Recipe[];
 }
 
 /**
@@ -109,7 +117,14 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
       price: parseFloat(row.price) || 0
     }));
 
-    return { products, transactions, directory, salesProducts };
+    const recipes: Recipe[] = (data.recipes || []).map((row: any) => ({
+      product: row.product || "",
+      ingredient: row.ingredient || "",
+      amount: parseFloat(row.amount) || 0,
+      unit: row.unit || "",
+    }));
+
+    return { products, transactions, directory, salesProducts, recipes };
   } catch (error) {
     console.error("Error fetching inventory from Google Sheets:", error);
     throw error;

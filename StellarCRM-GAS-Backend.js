@@ -88,11 +88,28 @@ function fetchInventoryData() {
     const arrivalData = arrivalSheet.getDataRange().getValues();
     const transactions = mapTransactionsFromArrivals(arrivalData);
 
+    // Отримуємо рецепти з Калькуляція для обрахунку витрат інгредієнтів
+    const recipeSheet = SS.getSheetByName(TABS.RECIPES);
+    let recipes = [];
+    if (recipeSheet) {
+        const recipeData = recipeSheet.getDataRange().getValues();
+        // Калькуляція: Готовий продукт(0), Інгредієнт(1), Кількість(2), Од.вим(3)
+        recipes = recipeData.slice(1)
+            .filter(row => row[0] && row[1])
+            .map(row => ({
+                product: row[0].toString().trim(),
+                ingredient: row[1].toString().trim(),
+                amount: parseFloat(row[2]) || 0,
+                unit: row[3] ? row[3].toString().trim() : ""
+            }));
+    }
+
     return {
         products: products,
         directory: directory,
         transactions: transactions,
-        salesProducts: salesProducts
+        salesProducts: salesProducts,
+        recipes: recipes
     };
 }
 

@@ -27,3 +27,10 @@ export interface Transaction {
   pricePerUnit?: number;
   total?: number;
 }
+
+export interface Recipe {
+  product: string;
+  ingredient: string;
+  amount: number;
+  unit: string;
+}

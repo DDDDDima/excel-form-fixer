@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Product, Transaction, initialProducts } from "../data/products";
+import { Product, Transaction, Recipe, initialProducts } from "../data/products";
 import { fetchInventoryFromSheets, submitTransactionToSheets } from "../services/googleSheetsApi";
 
 // Google Script URL is now managed in src/services/googleSheetsApi.ts
@@ -8,6 +8,7 @@ export function useInventory() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [salesProducts, setSalesProducts] = useState<Product[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +73,10 @@ export function useInventory() {
             price: p.price || 0,
           }))
         );
+      }
+
+      if (data.recipes) {
+        setRecipes(data.recipes);
       }
     } catch (error) {
       console.error("Failed to load inventory data:", error);
@@ -192,6 +197,7 @@ export function useInventory() {
     products,
     salesProducts,
     transactions,
+    recipes,
     lowStockItems,
     categories,
     isSubmitting,
