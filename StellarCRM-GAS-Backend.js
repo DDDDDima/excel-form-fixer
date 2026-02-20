@@ -73,14 +73,15 @@ function fetchInventoryData() {
         directory = mapDirData(dirSheet.getDataRange().getValues());
     }
 
-    // Додаємо список товарів для продажу з Прихід_форми!L2:L100
-    const lRangeData = arrivalSheet.getRange("L2:L100").getValues();
-    const salesProducts = lRangeData.flat()
-        .filter(name => name && name.toString().trim() !== "")
-        .map(name => ({
-            name: name.toString().trim(),
+    // Додаємо список товарів для продажу з Прихід_форми!L2:M100 (L=назва, M=ціна)
+    const lmRangeData = arrivalSheet.getRange("L2:M100").getValues();
+    const salesProducts = lmRangeData
+        .filter(row => row[0] && row[0].toString().trim() !== "")
+        .map(row => ({
+            name: row[0].toString().trim(),
             category: "готовий товар",
-            unit: "шт"
+            unit: "шт",
+            price: parseFloat(row[1]) || 0
         }));
 
     // Отримуємо історію операцій з Прихід_форми
@@ -107,6 +108,8 @@ function processTransaction(transaction) {
     // Спеціальна логіка для Продажу
     if (type === 'Продаж') {
         category = "готовий товар";
+        // Ціна приходить з колонки M, сума = ціна × кількість
+        total = (pricePerUnit || 0) * quantity;
         // Списання інгредієнтів за рецептом (Калькуляція)
         writeOffIngredients(item, quantity);
     } else {

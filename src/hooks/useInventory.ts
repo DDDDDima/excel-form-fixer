@@ -69,6 +69,7 @@ export function useInventory() {
             unit: p.unit,
             criticalLevel: 0,
             currentStock: 0,
+            price: p.price || 0,
           }))
         );
       }

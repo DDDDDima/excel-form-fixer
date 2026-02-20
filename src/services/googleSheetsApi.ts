@@ -1,6 +1,6 @@
 ﻿// Google Sheets API Web App URL
 // IMPORTANT: Paste your deployed URL here after "Deploy > New Deployment > Web App"
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4lmlz7aGqQu9S841PXTCIBxXRexe05VzOTqoAWO3yY9JTFHswzhRJ3FsnjfpswiNz/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5PAWxUwy7id23mBtK-drhFtvciN99uDTTstO3Aj3Aj8f9MF2GQLDrMC-yi3iSk6II/exec";
 
 export interface SheetProduct {
   id: string;
@@ -34,7 +34,7 @@ export interface InventoryData {
   products: SheetProduct[];
   transactions: SheetTransaction[];
   directory: SheetDirectoryItem[];
-  salesProducts: { name: string; category: string; unit: string }[];
+  salesProducts: { name: string; category: string; unit: string; price: number }[];
 }
 
 /**
@@ -105,7 +105,8 @@ export async function fetchInventoryFromSheets(): Promise<InventoryData> {
     const salesProducts = (data.salesProducts || []).map((row: any) => ({
       name: row.name || "",
       category: row.category || "Готова продукція",
-      unit: row.unit || "шт"
+      unit: row.unit || "шт",
+      price: parseFloat(row.price) || 0
     }));
 
     return { products, transactions, directory, salesProducts };

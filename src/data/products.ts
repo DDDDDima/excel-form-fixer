@@ -6,6 +6,7 @@ export interface Product {
   unit: string;
   criticalLevel: number;
   currentStock: number;
+  price?: number;
 }
 
 export type Category = string;

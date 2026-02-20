@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { CalendarIcon, Plus, Send } from "lucide-react";
@@ -76,6 +76,17 @@ export function TransactionForm({
     return allAvailable.find((p) => p.id === selectedProductId);
   }, [products, salesProducts, selectedProductId]);
 
+  const isSale = transactionType === 'Продаж';
+
+  // Auto-fill price from column M when selecting a product in Sale mode
+  useEffect(() => {
+    if (isSale && selectedProduct?.price) {
+      setTotalSum(String(selectedProduct.price));
+    } else if (isSale && selectedProduct && !selectedProduct.price) {
+      setTotalSum('');
+    }
+  }, [selectedProduct, isSale]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +107,11 @@ export function TransactionForm({
 
     const qty = parseFloat(quantity);
     const sum = parseFloat(totalSum);
-    const calculatedPrice = (qty > 0 && sum > 0) ? sum / qty : undefined;
+
+    // Продаж: sum = ціна за од., total = ціна × кількість
+    // Інше: sum = загальна сума, pricePerUnit = сума / кількість
+    const calculatedPrice = isSale ? sum : ((qty > 0 && sum > 0) ? sum / qty : undefined);
+    const calculatedTotal = isSale ? (sum * qty) : (sum || undefined);
 
     onSubmit({
       date,
@@ -107,7 +122,7 @@ export function TransactionForm({
       unit: product.unit,
       type: transactionType as "Прихід" | "Продаж" | "Списання",
       pricePerUnit: calculatedPrice,
-      total: sum || undefined,
+      total: calculatedTotal,
     });
 
     // Reset form
@@ -297,13 +312,15 @@ export function TransactionForm({
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Сума (грн)</Label>
+              <Label>{isSale ? 'Ціна за од. (грн)' : 'Сума (грн)'}</Label>
               <Input
                 type="number"
                 step="0.01"
                 placeholder="0.00"
                 value={totalSum}
                 onChange={(e) => setTotalSum(e.target.value)}
+                readOnly={isSale}
+                className={isSale ? 'bg-muted/30 cursor-not-allowed' : ''}
               />
             </div>
           </div>
