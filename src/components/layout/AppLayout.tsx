@@ -8,7 +8,8 @@ import {
     Menu,
     X,
     Settings,
-    ChevronRight
+    ChevronRight,
+    ShoppingCart
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Button } from "../ui/button";
@@ -82,6 +83,13 @@ const SidebarContent = ({ activePath, onItemClick }: { activePath: string; onIte
                     icon={BarChart3}
                     label="Аналітика"
                     active={activePath === "/analytics"}
+                    onClick={onItemClick}
+                />
+                <NavItem
+                    to="/pos"
+                    icon={ShoppingCart}
+                    label="POS Термінал"
+                    active={activePath === "/pos"}
                     onClick={onItemClick}
                 />
             </nav>

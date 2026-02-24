@@ -10,6 +10,7 @@ import Transactions from "./pages/Transactions";
 import Directory from "./pages/Directory";
 import Analytics from "./pages/Analytics";
 import SettingsPage from "./pages/Settings";
+import POS from "./pages/POS";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/directory" element={<Directory />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/pos" element={<POS />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>
