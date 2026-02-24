@@ -25,7 +25,22 @@ const TELEGRAM_CONFIG = {
     CHAT_ID: '646188273'
 };
 
+const AUTH_CONFIG = {
+    "admin": "1234",  // Логін: Пароль (Змініть на свій)
+    "user1": "5678"
+};
+
 function doGet(e) {
+    const page = e.parameter.page || 'index';
+
+    if (page === 'pos') {
+        return HtmlService.createTemplateFromFile('POS')
+            .evaluate()
+            .setTitle('Stellar CRM - POS')
+            .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+            .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+
     const action = e.parameter.action || 'getInventory';
     try {
         if (action === 'getInventory') {
@@ -186,6 +201,34 @@ function processTransaction(transaction) {
     }
 
     return { success: true };
+}
+
+/**
+ * 2.1 ОБРОБКА МАСОВИХ ПРОДАЖІВ (POS)
+ */
+function processBulkSales(salesData, credentials) {
+    // Перевірка авторизації
+    if (!credentials || !AUTH_CONFIG[credentials.login] || AUTH_CONFIG[credentials.login] !== credentials.password) {
+        return { success: false, message: 'Помилка авторизації' };
+    }
+
+    try {
+        const results = [];
+        salesData.forEach(sale => {
+            const result = processTransaction({
+                type: 'Продаж',
+                item: sale.item,
+                quantity: sale.quantity,
+                pricePerUnit: sale.price,
+                date: new Date().toISOString()
+            });
+            results.push(result);
+        });
+
+        return { success: true, message: 'Продажі успішно записані', results: results };
+    } catch (err) {
+        return { success: false, message: 'Помилка при збереженні: ' + err.toString() };
+    }
 }
 
 /**
