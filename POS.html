@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <base target="_top">
     <meta charset="UTF-8">
@@ -7,14 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #10b981; /* Green-500 */
-            --primary-dark: #059669; /* Green-600 */
-            --bg: #0f172a; /* Slate-900 */
-            --card-bg: #1e293b; /* Slate-800 */
-            --text: #f8fafc; /* Slate-50 */
-            --text-muted: #94a3b8; /* Slate-400 */
-            --danger: #ef4444; /* Red-500 */
-            --accent: #6366f1; /* Indigo-500 */
+            --primary: #10b981;
+            /* Green-500 */
+            --primary-dark: #059669;
+            /* Green-600 */
+            --bg: #0f172a;
+            /* Slate-900 */
+            --card-bg: #1e293b;
+            /* Slate-800 */
+            --text: #f8fafc;
+            /* Slate-50 */
+            --text-muted: #94a3b8;
+            /* Slate-400 */
+            --danger: #ef4444;
+            /* Red-500 */
+            --accent: #6366f1;
+            /* Indigo-500 */
             --header-h: 80px;
         }
 
@@ -214,7 +223,7 @@
         .product-btn:active {
             transform: translateY(2px) scale(0.96);
             background: #334155;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .product-name {
@@ -274,14 +283,16 @@
         .spinner {
             width: 16px;
             height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .toast {
@@ -295,7 +306,7 @@
             border-radius: 50px;
             transition: bottom 0.3s;
             z-index: 2000;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         .toast.show {
@@ -303,6 +314,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div id="auth-overlay">
@@ -352,7 +364,7 @@
         function login() {
             const loginVal = document.getElementById('login').value;
             const passVal = document.getElementById('password').value;
-            
+
             if (!loginVal || !passVal) {
                 showToast('Введіть логін та пароль');
                 return;
@@ -360,35 +372,41 @@
 
             // Ми передамо це бекенду при кожній дії
             currentUser = { login: loginVal, password: passVal };
-            
+
             // Спробуємо отримати дані, щоб перевірити логін
             loadProducts();
         }
 
         function loadProducts() {
             document.getElementById('auth-overlay').style.opacity = '0.5';
-            
+
             google.script.run
                 .withSuccessHandler(data => {
-                    if (data.error) {
-                        showToast('Помилка: ' + data.error);
-                        document.getElementById('auth-overlay').style.opacity = '1';
+                    document.getElementById('auth-overlay').style.opacity = '1';
+
+                    if (!data) {
+                        alert('Помилка: Бекенд повернув порожні дані. Перевірте назви аркушів у таблиці.');
                         return;
                     }
-                    
+
+                    if (data.error) {
+                        alert('Помилка скрипта: ' + data.error);
+                        return;
+                    }
+
                     products = data.salesProducts || [];
                     if (products.length === 0) {
-                        showToast('Товари для продажу не знайдено');
+                        alert('Попередження: Товари для продажу не знайдено в колонках L:M аркуша Прихід_форми.');
                     }
-                    
+
                     renderGrid();
                     document.getElementById('auth-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('main-content').style.display = 'block';
                 })
                 .withFailureHandler(err => {
-                    showToast('Помилка сервера: ' + err);
                     document.getElementById('auth-overlay').style.opacity = '1';
+                    alert('Помилка сервера: ' + err.toString());
                 })
                 .fetchInventoryData();
         }
@@ -396,12 +414,12 @@
         function renderGrid() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
-            
+
             products.forEach((p, idx) => {
                 const btn = document.createElement('div');
                 btn.className = 'product-btn';
                 btn.onclick = () => addToSale(idx);
-                
+
                 btn.innerHTML = `
                     <div id="badge-${idx}" class="badge">0</div>
                     <div class="product-name">${p.name}</div>
@@ -414,19 +432,19 @@
         function addToSale(idx) {
             const mult = parseInt(document.getElementById('multiplier').value) || 1;
             const productName = products[idx].name;
-            
+
             if (!salesMap[productName]) {
-                salesMap[productName] = { 
-                    item: productName, 
-                    quantity: 0, 
-                    price: products[idx].price 
+                salesMap[productName] = {
+                    item: productName,
+                    quantity: 0,
+                    price: products[idx].price
                 };
             }
-            
+
             salesMap[productName].quantity += mult;
-            
+
             updateUI(idx);
-            
+
             // Feedback animation
             const btn = document.querySelectorAll('.product-btn')[idx];
             btn.style.borderColor = 'var(--primary)';
@@ -437,14 +455,14 @@
             const productName = products[idx].name;
             const badge = document.getElementById(`badge-${idx}`);
             const count = salesMap[productName] ? salesMap[productName].quantity : 0;
-            
+
             if (count > 0) {
                 badge.textContent = count;
                 badge.classList.add('show');
             } else {
                 badge.classList.remove('show');
             }
-            
+
             const totalItems = Object.values(salesMap).reduce((acc, curr) => acc + curr.quantity, 0);
             const sendBtn = document.getElementById('send-btn');
             sendBtn.disabled = totalItems === 0;
@@ -482,10 +500,11 @@
             document.getElementById('send-btn').textContent = 'ВІДПРАВИТИ (0)';
             document.getElementById('send-btn').disabled = true;
             document.getElementById('multiplier').value = 1;
-            
+
             const badges = document.querySelectorAll('.badge');
             badges.forEach(b => b.classList.remove('show'));
         }
     </script>
 </body>
+
 </html>
