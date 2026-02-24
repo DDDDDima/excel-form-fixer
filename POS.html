@@ -378,25 +378,39 @@
         }
 
         function loadProducts() {
+            console.log('Починаю завантаження товарів...');
             document.getElementById('auth-overlay').style.opacity = '0.5';
 
             google.script.run
                 .withSuccessHandler(data => {
+                    console.log('Отримано дані від сервера:', data);
                     document.getElementById('auth-overlay').style.opacity = '1';
 
-                    if (!data) {
-                        alert('Помилка: Бекенд повернув порожні дані. Перевірте назви аркушів у таблиці.');
+                    if (data === null || data === undefined) {
+                        const errorMsg = 'Помилка: Бекенд повернув null або undefined. \n\n' +
+                            'Ймовірні причини: \n' +
+                            '1. Ви не зберегли проект у GAS (іконка дискети).\n' +
+                            '2. Ви не зробили New Deployment після оновлення Code.gs.\n' +
+                            '3. Функція fetchInventoryData видає помилку.';
+                        alert(errorMsg);
                         return;
                     }
 
                     if (data.error) {
-                        alert('Помилка скрипта: ' + data.error);
+                        alert('Помилка в самому скрипті (Apps Script): ' + data.error);
+                        return;
+                    }
+
+                    if (!data.salesProducts) {
+                        alert('Помилка: Поле salesProducts відсутнє у відповіді сервера. Перевірте функцію fetchInventoryData.');
                         return;
                     }
 
                     products = data.salesProducts || [];
+                    console.log('Список товарів:', products);
+
                     if (products.length === 0) {
-                        alert('Попередження: Товари для продажу не знайдено в колонках L:M аркуша Прихід_форми.');
+                        alert('Попередження: Список товарів порожній. Перевірте, чи заповнені колонки L та M на аркуші "Прихід_форми".');
                     }
 
                     renderGrid();
@@ -405,8 +419,9 @@
                     document.getElementById('main-content').style.display = 'block';
                 })
                 .withFailureHandler(err => {
+                    console.error('Критична помилка google.script.run:', err);
                     document.getElementById('auth-overlay').style.opacity = '1';
-                    alert('Помилка сервера: ' + err.toString());
+                    alert('Критична помилка зв\'язку з сервером: ' + err.toString());
                 })
                 .fetchInventoryData();
         }
